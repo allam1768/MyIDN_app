@@ -54,6 +54,8 @@ app.*.map.json
 # ==============================================================================
 # 4. Android Build Files & Secrets
 # ==============================================================================
+*.apk
+*.aab
 /android/app/debug/
 /android/app/profile/
 /android/app/release/
