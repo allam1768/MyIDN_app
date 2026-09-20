@@ -112,7 +112,7 @@ MyIDN dibangun dengan standar **Clean Architecture**, **SOLID**, dan **Separatio
 ---
 
 
-## 👨‍💻 Author & Lisensi
+
 
 Dibuat dan dikembangkan oleh:
 * **Allam Permata Putra**
