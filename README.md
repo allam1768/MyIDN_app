@@ -123,43 +123,6 @@ MyIDN dibangun dengan standar **Clean Architecture**, **SOLID**, dan **Separatio
 
 ---
 
-## 💻 Panduan Developer (Build dari Source)
-
-Bagi pengembang yang ingin berkontribusi atau mengompilasi sendiri:
-
-### 1. Prasyarat
-* Flutter SDK versi 3.19 ke atas (`flutter --version`)
-* Android SDK dengan Java 17
-
-### 2. Kloning Repositori
-```bash
-git clone https://github.com/allam1768/MyIDN_app.git
-cd MyIDN_app
-```
-
-### 3. Install Dependensi
-```bash
-flutter pub get
-```
-
-### 4. Jalankan Pengujian
-```bash
-flutter test
-```
-
-### 5. Jalankan Aplikasi
-```bash
-flutter run
-```
-
-### 6. Build Release APK
-```bash
-flutter build apk --release
-```
-Berkas APK hasil build akan berlokasi di `build/app/outputs/flutter-apk/app-release.apk`.
-
----
-
 ## 🧪 Kualitas Kode & Pengujian
 
 * **Static Analysis**: `dart analyze --fatal-infos` lolos dengan **0 Issues** (Clean Code).
