@@ -30,9 +30,7 @@
 2. [Fitur Unggulan](#-fitur-unggulan)
 3. [Cara Download & Install lewat GitHub](#-cara-download--install-lewat-github)
 4. [Sistem Lisensi Hardware-Locked Ed25519](#-sistem-lisensi-hardware-locked-ed25519)
-5. [Tech Stack & Arsitektur](#-tech-stack--arsitektur)
-6. [Panduan Developer (Build dari Source)](#-panduan-developer-build-dari-source)
-7. [Kualitas Kode & Pengujian](#-kualitas-kode--pengujian)
+
 8. [Author & Lisensi](#-author--lisensi)
 
 ---
