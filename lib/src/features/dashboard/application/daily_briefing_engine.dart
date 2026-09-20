@@ -102,16 +102,26 @@ class DailyBriefingEngine {
 
     // 2. Pembaruan Aplikasi dari GitHub jika versi baru tersedia
     if (updateInfo != null && updateInfo.hasUpdate) {
+      final isUrgent = updateInfo.isForceUpdate;
       items.add(
         DailyAgendaItem(
-          badge: 'UPDATE TERSEDIA',
-          title: 'Versi Baru MyIDN v${updateInfo.latestVersion} Tersedia! 🎉',
-          subtitle: 'Tekan untuk melihat catatan rilis & unduh versi terbaru',
-          icon: Icons.rocket_launch_rounded,
-          buttonText: 'Lihat Pembaruan',
-          secondaryNotice:
-              'Versi terpasang: v${updateInfo.currentVersion} • Tap untuk info',
-          gradientColors: const [Color(0xFF8B5CF6), Color(0xFF6D28D9)],
+          badge: isUrgent ? 'UPDATE WAJIB' : 'UPDATE TERSEDIA',
+          title: isUrgent
+              ? 'Pembaruan Kritis v${updateInfo.latestVersion} Wajib Dipasang! 🚨'
+              : 'Versi Baru MyIDN v${updateInfo.latestVersion} Tersedia! 🎉',
+          subtitle: isUrgent
+              ? 'Versi lama tidak didukung. Wajib perbarui sekarang'
+              : 'Tekan untuk melihat catatan rilis & unduh versi terbaru',
+          icon: isUrgent
+              ? Icons.warning_amber_rounded
+              : Icons.rocket_launch_rounded,
+          buttonText: isUrgent ? 'Pasang Sekarang' : 'Lihat Pembaruan',
+          secondaryNotice: isUrgent
+              ? 'Pembaruan darurat sistem MyIDN • Tindakan wajib'
+              : 'Versi terpasang: v${updateInfo.currentVersion} • Tap untuk info',
+          gradientColors: isUrgent
+              ? const [Color(0xFFDC2626), Color(0xFF991B1B)]
+              : const [Color(0xFF8B5CF6), Color(0xFF6D28D9)],
           buttonTextColor: const Color(0xFF0F172A),
           onAction: (ctx, ref) async {
             await UpdateDialog.show(ctx, updateInfo);

@@ -8,6 +8,7 @@ class AppUpdateInfo {
   final String downloadUrl;
   final String htmlUrl;
   final DateTime? publishedAt;
+  final bool isForceUpdate;
 
   const AppUpdateInfo({
     required this.currentVersion,
@@ -18,9 +19,10 @@ class AppUpdateInfo {
     required this.downloadUrl,
     required this.htmlUrl,
     this.publishedAt,
+    this.isForceUpdate = false,
   });
 
   @override
   String toString() =>
-      'AppUpdateInfo(current: $currentVersion, latest: $latestVersion, hasUpdate: $hasUpdate)';
+      'AppUpdateInfo(current: $currentVersion, latest: $latestVersion, hasUpdate: $hasUpdate, isForceUpdate: $isForceUpdate)';
 }

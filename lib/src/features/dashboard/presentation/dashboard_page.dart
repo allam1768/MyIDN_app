@@ -11,6 +11,8 @@ import '../../poin_kebaikan/data/poin_kebaikan_data.dart';
 import '../../poin_kebaikan/presentation/poin_kebaikan_page.dart';
 import '../../tugas/presentation/tugas_page.dart';
 import '../../surat_izin/presentation/surat_izin_form_page.dart';
+import '../../update/presentation/update_dialog.dart';
+import '../../update/presentation/update_providers.dart';
 import '../application/dashboard_helpers.dart';
 import 'dashboard_providers.dart';
 import 'dashboard_utils.dart';
@@ -32,6 +34,7 @@ class DashboardPage extends ConsumerWidget {
     ref.invalidate(dashboardMahasiswaProvider);
     ref.invalidate(ibadahHarianProvider);
     ref.invalidate(poinKebaikanStatusProvider);
+    ref.invalidate(appUpdateInfoProvider);
   }
 
   static Future<void> _syncNightlyReminder(WidgetRef ref) async {
@@ -61,6 +64,28 @@ class DashboardPage extends ConsumerWidget {
         _syncNightlyReminder(ref);
       });
     });
+
+    // Pantau pembaruan darurat/wajib (Force Update) dari GitHub
+    ref.listen(appUpdateInfoProvider, (prev, next) {
+      next.whenData((info) {
+        if (info != null && info.hasUpdate && info.isForceUpdate) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (context.mounted) {
+              UpdateDialog.show(context, info);
+            }
+          });
+        }
+      });
+    });
+
+    final updateInfo = ref.watch(appUpdateInfoProvider).valueOrNull;
+    if (updateInfo != null && updateInfo.hasUpdate && updateInfo.isForceUpdate) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (context.mounted) {
+          UpdateDialog.show(context, updateInfo);
+        }
+      });
+    }
 
     final dashboardAsync = ref.watch(dashboardMahasiswaProvider);
     final kelasAsync = ref.watch(kelasHarianProvider);

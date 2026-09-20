@@ -61,11 +61,14 @@ class AppUpdateService {
         }
 
         final bool hasUpdate = isNewerVersion(cleanTag, currentVersion);
+        final bool isForceUpdate = hasUpdate &&
+            checkIsForceUpdate(title: releaseTitle, body: releaseNotes);
 
         return AppUpdateInfo(
           currentVersion: currentVersion,
           latestVersion: cleanTag.isNotEmpty ? cleanTag : currentVersion,
           hasUpdate: hasUpdate,
+          isForceUpdate: isForceUpdate,
           releaseTitle: releaseTitle,
           releaseNotes: releaseNotes,
           downloadUrl: downloadUrl,
@@ -80,6 +83,35 @@ class AppUpdateService {
       }
     }
     return null;
+  }
+
+  /// Mengecek apakah rilis ini merupakan pembaruan wajib / darurat (Force Update)
+  static bool checkIsForceUpdate({
+    required String title,
+    required String body,
+  }) {
+    final lowerTitle = title.toLowerCase();
+    final lowerBody = body.toLowerCase();
+    const forceKeywords = [
+      '[urgent]',
+      '(urgent)',
+      'force update',
+      '[force]',
+      '(force)',
+      '[mandatory]',
+      '(mandatory)',
+      '[wajib]',
+      '(wajib)',
+      'wajib update',
+      'wajib perbarui',
+    ];
+
+    for (final kw in forceKeywords) {
+      if (lowerTitle.contains(kw) || lowerBody.contains(kw)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /// Membandingkan 2 format semver (contoh: "1.0.1" lebih baru daripada "1.0.0")

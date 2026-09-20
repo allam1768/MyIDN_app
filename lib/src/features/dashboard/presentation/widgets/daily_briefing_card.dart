@@ -167,16 +167,19 @@ class _DailyBriefingCardState extends ConsumerState<DailyBriefingCard> {
   }
 
   Widget _buildCardItem(BuildContext context, DailyAgendaItem item) {
-    final bool isUpdate = item.badge == 'UPDATE TERSEDIA';
-    final Color cardColor = isUpdate
-        ? const Color(0xFF7C3AED)
-        : const Color(0xFF1D4ED8);
-    final Color shadowColor = isUpdate
-        ? const Color(0xFF7C3AED).withValues(alpha: 0.35)
-        : const Color(0xFF1D4ED8).withValues(alpha: 0.25);
-    final Color actionTextColor = isUpdate
-        ? const Color(0xFF6D28D9)
-        : const Color(0xFF1D4ED8);
+    final bool isForceUpdate = item.badge == 'UPDATE WAJIB';
+    final bool isUpdate = item.badge == 'UPDATE TERSEDIA' || isForceUpdate;
+    final Color cardColor = isForceUpdate
+        ? const Color(0xFFDC2626)
+        : (isUpdate ? const Color(0xFF7C3AED) : const Color(0xFF1D4ED8));
+    final Color shadowColor = isForceUpdate
+        ? const Color(0xFFDC2626).withValues(alpha: 0.35)
+        : (isUpdate
+            ? const Color(0xFF7C3AED).withValues(alpha: 0.35)
+            : const Color(0xFF1D4ED8).withValues(alpha: 0.25));
+    final Color actionTextColor = isForceUpdate
+        ? const Color(0xFFDC2626)
+        : (isUpdate ? const Color(0xFF6D28D9) : const Color(0xFF1D4ED8));
 
     return Container(
       width: double.infinity,

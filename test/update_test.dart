@@ -52,13 +52,64 @@ void main() {
       expect(info.currentVersion, '1.0.0');
       expect(info.latestVersion, '1.0.1');
       expect(info.hasUpdate, isTrue);
+      expect(info.isForceUpdate, isFalse);
       expect(info.downloadUrl, contains('.apk'));
       expect(info.releaseTitle, contains('Rilis'));
     });
   });
 
+  group('AppUpdateService.checkIsForceUpdate Tests', () {
+    test('detects urgent keywords in title or notes correctly', () {
+      expect(
+        AppUpdateService.checkIsForceUpdate(
+          title: 'Rilis v1.0.1 [URGENT]',
+          body: 'Perbaikan API',
+        ),
+        isTrue,
+      );
+      expect(
+        AppUpdateService.checkIsForceUpdate(
+          title: 'Rilis v1.0.1',
+          body: 'Catatan: [WAJIB] Harap segera update',
+        ),
+        isTrue,
+      );
+      expect(
+        AppUpdateService.checkIsForceUpdate(
+          title: 'Pembaruan (Urgent)',
+          body: 'Penting',
+        ),
+        isTrue,
+      );
+      expect(
+        AppUpdateService.checkIsForceUpdate(
+          title: 'MyIDN Update',
+          body: 'Wajib update untuk perbaikan bug absensi',
+        ),
+        isTrue,
+      );
+      expect(
+        AppUpdateService.checkIsForceUpdate(
+          title: 'Pembaruan Force Update',
+          body: 'Perubahan struktur data',
+        ),
+        isTrue,
+      );
+    });
+
+    test('returns false when no urgent keywords are present', () {
+      expect(
+        AppUpdateService.checkIsForceUpdate(
+          title: 'Rilis v1.0.1',
+          body: 'Penambahan tema baru dan optimasi performa',
+        ),
+        isFalse,
+      );
+    });
+  });
+
   group('DailyBriefingEngine Update Card Integration Tests', () {
-    test('includes UPDATE TERSEDIA item when update is available', () {
+    test('includes UPDATE TERSEDIA item when update is regular', () {
       const info = AppUpdateInfo(
         currentVersion: '1.0.0',
         latestVersion: '1.0.1',
@@ -88,7 +139,39 @@ void main() {
       expect(updateItem.title, contains('v1.0.1'));
     });
 
-    test('does not include UPDATE TERSEDIA item when no update available', () {
+    test('includes UPDATE WAJIB item when update is force update', () {
+      const info = AppUpdateInfo(
+        currentVersion: '1.0.0',
+        latestVersion: '1.0.1',
+        hasUpdate: true,
+        isForceUpdate: true,
+        releaseTitle: 'v1.0.1 [URGENT]',
+        releaseNotes: 'Pembaruan darurat',
+        downloadUrl: 'https://github.com/...',
+        htmlUrl: 'https://github.com/...',
+      );
+
+      final items = DailyBriefingEngine.resolveItems(
+        listKelas: [],
+        listTugas: [],
+        nowMinutes: 600,
+        isIbadahDone: true,
+        isKebaikanDone: true,
+        updateInfo: info,
+      );
+
+      final hasUrgentBadge = items.any(
+        (item) => item.badge == 'UPDATE WAJIB',
+      );
+      expect(hasUrgentBadge, isTrue);
+      final updateItem = items.firstWhere(
+        (item) => item.badge == 'UPDATE WAJIB',
+      );
+      expect(updateItem.title, contains('Kritis'));
+      expect(updateItem.buttonText, 'Pasang Sekarang');
+    });
+
+    test('does not include UPDATE TERSEDIA or WAJIB item when no update available', () {
       final items = DailyBriefingEngine.resolveItems(
         listKelas: [],
         listTugas: [],
@@ -99,7 +182,7 @@ void main() {
       );
 
       final hasUpdateBadge = items.any(
-        (item) => item.badge == 'UPDATE TERSEDIA',
+        (item) => item.badge == 'UPDATE TERSEDIA' || item.badge == 'UPDATE WAJIB',
       );
       expect(hasUpdateBadge, isFalse);
     });
