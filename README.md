@@ -24,16 +24,6 @@
 
 ---
 
-## 📖 Daftar Isi
-
-1. [Tentang MyIDN](#-tentang-myidn)
-2. [Fitur Unggulan](#-fitur-unggulan)
-3. [Cara Download & Install lewat GitHub](#-cara-download--install-lewat-github)
-4. [Sistem Lisensi Hardware-Locked Ed25519](#-sistem-lisensi-hardware-locked-ed25519)
-
-8. [Author & Lisensi](#-author--lisensi)
-
----
 
 ## 🌟 Tentang MyIDN
 
@@ -129,4 +119,3 @@ Dibuat dan dikembangkan oleh:
 * GitHub: [@allam1768](https://github.com/allam1768)
 * Email: [putraapermataa@gmail.com](mailto:putraapermataa@gmail.com)
 
-*Hak Cipta © 2026 Allam Permata Putra. Seluruh hak cipta dilindungi undang-undang.*
