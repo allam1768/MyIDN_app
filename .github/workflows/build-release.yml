@@ -1,0 +1,69 @@
+name: Build & Release APK
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build & Publish Release APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      - name: Get Dependencies
+        run: flutter pub get
+
+      - name: Run Tests
+        run: flutter test
+
+      - name: Build Release APK
+        run: flutter build apk --release
+
+      - name: Prepare Release APK Asset
+        run: |
+          mkdir -p release-artifacts
+          cp build/app/outputs/flutter-apk/app-release.apk release-artifacts/MyIDN-release.apk
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          name: MyIDN App Release ${{ github.ref_name }}
+          tag_name: ${{ github.ref_name }}
+          files: release-artifacts/MyIDN-release.apk
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+          body: |
+            ## 🎉 MyIDN App Release ${{ github.ref_name }}
+            
+            Unduh berkas APK siap pakai di bawah ini dan pasang langsung ke perangkat Android Anda.
+            
+            ### 📥 Download
+            * **[MyIDN-release.apk](https://github.com/allam1768/MyIDN_app/releases/download/${{ github.ref_name }}/MyIDN-release.apk)**
+            
+            ### 🚀 Panduan Instalasi
+            1. Unduh berkas **MyIDN-release.apk**.
+            2. Buka berkas dan tekan **Install**.
+            3. Jika muncul notifikasi Google Play Protect (*Blocked by Play Protect*), pilih **More details (Rincian lainnya)** lalu klik **Install anyway (Tetap instal)**.
+            4. Buka aplikasi dan nikmati kemudahan manajemen perkuliahan IDN!
