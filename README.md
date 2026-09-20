@@ -28,6 +28,9 @@
 ##  Tentang MyIDN
 
 **MyIDN** adalah aplikasi asisten pintar yang dirancang khusus untuk mahasiswa Politeknik IDN Bogor. Aplikasi ini mengotomatiskan seluruh alur perkuliahan: mulai dari pengingat jadwal kelas harian, pengisian presensi absensi, monitoring tugas & deadline, pengajuan surat izin sakit resmi berformat PDF, hingga pelaporan ibadah dan poin kebaikan santri secara terpusat.
+
+Dilengkapi dengan desain UI clean, modern, dan responsif serta dipersenjatai perlindungan lisensi anti-pembajakan seumur hidup (*Offline Hardware-Locked Cryptography*).
+
 ---
 
 ##  Fitur Unggulan
