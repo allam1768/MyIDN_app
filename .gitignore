@@ -1,0 +1,100 @@
+# ==============================================================================
+# 1. Miscellaneous & OS Specific Files
+# ==============================================================================
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+.atom/
+.build/
+.buildlog/
+.history
+.svn/
+.swiftpm/
+migrate_working_dir/
+
+# ==============================================================================
+# 2. IDE & Editor Files
+# ==============================================================================
+# IntelliJ IDEA / Android Studio
+*.iml
+*.ipr
+*.iws
+.idea/
+.idea_modules/
+
+# Visual Studio Code
+.vscode/
+
+# ==============================================================================
+# 3. Flutter & Dart Build Artifacts
+# ==============================================================================
+**/doc/api/
+**/ios/Flutter/.last_build_id
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+/build/
+/coverage/
+
+# Symbolication & Obfuscation
+app.*.symbols
+app.*.map.json
+
+# ==============================================================================
+# 4. Android Build Files & Secrets
+# ==============================================================================
+/android/app/debug/
+/android/app/profile/
+/android/app/release/
+android/.gradle/
+android/.kotlin/
+android/captures/
+android/local.properties
+android/GeneratedPluginRegistrant.java
+android/.cxx/
+android/app/src/main/assets/
+
+# Keystores & Signing Keys (NEVER COMMIT SENSITIVE KEYS)
+key.properties
+*.keystore
+*.jks
+
+# ==============================================================================
+# 5. iOS Build Files & Pods
+# ==============================================================================
+ios/.generated/
+ios/Flutter/App.framework
+ios/Flutter/Flutter.framework
+ios/Flutter/Flutter.podspec
+ios/Flutter/Generated.xcconfig
+ios/Flutter/app.flx
+ios/Flutter/app.zip
+ios/Flutter/flutter_assets/
+ios/Flutter/flutter_export_environment.sh
+ios/Flutter/ephemeral/
+ios/Pods/
+ios/.symlinks/
+ios/ServiceDefinitions.json
+ios/Runner/GeneratedPluginRegistrant.*
+**/DerivedData/
+
+# ==============================================================================
+# 6. Credentials, Sessions & Environment Variables
+# ==============================================================================
+cookies.txt
+*.session
+.cookies/
+.env
+.env.*
+!.env.example
