@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import '../../../update/presentation/update_providers.dart';
 import '../../application/daily_briefing_engine.dart';
 import '../../application/dashboard_helpers.dart';
 import '../../domain/models/daily_agenda_item.dart';
@@ -60,6 +61,9 @@ class _DailyBriefingCardState extends ConsumerState<DailyBriefingCard> {
         widget.isKebaikanDone ??
         (ref.watch(poinKebaikanStatusProvider).valueOrNull ?? false);
 
+    // Cek ketersediaan info pembaruan aplikasi dari GitHub
+    final updateInfo = ref.watch(appUpdateInfoProvider).valueOrNull;
+
     // Delegasi perhitungan agenda ke DailyBriefingEngine (SoC)
     final items = DailyBriefingEngine.resolveItems(
       listKelas: widget.listKelas,
@@ -67,6 +71,7 @@ class _DailyBriefingCardState extends ConsumerState<DailyBriefingCard> {
       nowMinutes: widget.nowMinutes,
       isIbadahDone: isIbadahDone,
       isKebaikanDone: isKebaikanDone,
+      updateInfo: updateInfo,
     );
 
     if (_currentIndex >= items.length) {
@@ -162,12 +167,21 @@ class _DailyBriefingCardState extends ConsumerState<DailyBriefingCard> {
   }
 
   Widget _buildCardItem(BuildContext context, DailyAgendaItem item) {
+    final bool isUpdate = item.badge == 'UPDATE TERSEDIA';
+    final Color cardColor = isUpdate
+        ? const Color(0xFF7C3AED)
+        : const Color(0xFF1D4ED8);
+    final Color shadowColor = isUpdate
+        ? const Color(0xFF7C3AED).withValues(alpha: 0.35)
+        : const Color(0xFF1D4ED8).withValues(alpha: 0.25);
+    final Color actionTextColor = isUpdate
+        ? const Color(0xFF6D28D9)
+        : const Color(0xFF1D4ED8);
+
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        color: const Color(
-          0xFF1D4ED8,
-        ), // Solid Vibrant Royal Blue (Clean, tanpa gradient)
+        color: cardColor,
         borderRadius: BorderRadius.circular(20.r),
         border: Border.all(
           color: Colors.white.withValues(alpha: 0.18),
@@ -175,7 +189,7 @@ class _DailyBriefingCardState extends ConsumerState<DailyBriefingCard> {
         ),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF1D4ED8).withValues(alpha: 0.25),
+            color: shadowColor,
             blurRadius: 16.r,
             offset: Offset(0, 5.h),
           ),
@@ -356,7 +370,7 @@ class _DailyBriefingCardState extends ConsumerState<DailyBriefingCard> {
                           style: TextStyle(
                             fontSize: 12.5.sp,
                             fontWeight: FontWeight.w700,
-                            color: const Color(0xFF1D4ED8),
+                            color: actionTextColor,
                             letterSpacing: -0.2,
                           ),
                         ),
@@ -364,7 +378,7 @@ class _DailyBriefingCardState extends ConsumerState<DailyBriefingCard> {
                         Icon(
                           Icons.arrow_forward_rounded,
                           size: 14.sp,
-                          color: const Color(0xFF1D4ED8),
+                          color: actionTextColor,
                         ),
                       ],
                     ),

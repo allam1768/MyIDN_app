@@ -2,8 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../auth/presentation/auth_controller.dart';
 import '../../auth/presentation/login_page.dart';
+import '../../update/application/app_update_service.dart';
+import '../../update/presentation/update_dialog.dart';
+import '../../update/presentation/update_providers.dart';
 import 'dashboard_providers.dart';
 import 'dashboard_utils.dart';
 
@@ -15,6 +19,77 @@ class ProfilePage extends ConsumerStatefulWidget {
 }
 
 class _ProfilePageState extends ConsumerState<ProfilePage> {
+  bool _isCheckingUpdate = false;
+
+  Future<void> _checkUpdateManual() async {
+    if (_isCheckingUpdate) return;
+    setState(() => _isCheckingUpdate = true);
+    HapticFeedback.lightImpact();
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            SizedBox(
+              width: 14.r,
+              height: 14.r,
+              child: const CircularProgressIndicator(
+                strokeWidth: 2,
+                color: Colors.white,
+              ),
+            ),
+            SizedBox(width: 10.w),
+            const Text('Memeriksa rilis terbaru di GitHub...'),
+          ],
+        ),
+        duration: const Duration(seconds: 2),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+
+    try {
+      final updateInfo =
+          await ref.read(appUpdateServiceProvider).checkForUpdate();
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+
+      if (updateInfo == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Gagal terhubung ke GitHub. Pastikan koneksi internet aktif.',
+            ),
+            backgroundColor: Color(0xFFDC2626),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      } else if (updateInfo.hasUpdate) {
+        await UpdateDialog.show(context, updateInfo);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Aplikasi sudah dalam versi terbaru (v${updateInfo.currentVersion}) 👍',
+            ),
+            backgroundColor: const Color(0xFF16A34A),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isCheckingUpdate = false);
+    }
+  }
+
+  Future<void> _openGitHubRepo() async {
+    final uri = Uri.parse(
+      'https://github.com/${AppUpdateService.githubRepoOwner}/${AppUpdateService.githubRepoName}',
+    );
+    try {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } catch (_) {}
+  }
+
   void _showLogoutDialog(BuildContext context, WidgetRef ref) async {
     final confirm = await showDialog<bool>(
       context: context,
@@ -151,6 +226,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
   Widget build(BuildContext context) {
     final dashboardAsync = ref.watch(dashboardMahasiswaProvider);
     final kelasAsync = ref.watch(kelasHarianProvider);
+    final updateInfo = ref.watch(appUpdateInfoProvider).valueOrNull;
 
     final dashboardData = dashboardAsync.valueOrNull;
     final kelasData = kelasAsync.valueOrNull;
@@ -183,6 +259,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
         onRefresh: () async {
           ref.invalidate(dashboardMahasiswaProvider);
           ref.invalidate(kelasHarianProvider);
+          ref.invalidate(appUpdateInfoProvider);
         },
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
@@ -419,7 +496,101 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                   value: profile.email,
                 ),
               ]),
+              SizedBox(height: 16.h),
+
+              // ==========================================
+              // 4. APLIKASI & PEMBARUAN
+              // ==========================================
+              Padding(
+                padding: EdgeInsets.only(left: 4.w, bottom: 6.h),
+                child: Text(
+                  'Informasi Aplikasi & Pembaruan',
+                  style: TextStyle(
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.bold,
+                    color: const Color(0xFF374151),
+                  ),
+                ),
+              ),
+              _buildSectionCard([
+                _buildInfoTile(
+                  icon: Icons.info_outline_rounded,
+                  label: 'Versi Aplikasi',
+                  value: 'v${AppUpdateService.currentVersion}',
+                  iconBgColor: const Color(0xFFEFF6FF),
+                  iconColor: const Color(0xFF2563EB),
+                  trailing: updateInfo?.hasUpdate == true
+                      ? Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 8.w,
+                            vertical: 3.h,
+                          ),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFF3E8FF),
+                            borderRadius: BorderRadius.circular(12.r),
+                            border: Border.all(color: const Color(0xFFD8B4FE)),
+                          ),
+                          child: Text(
+                            'Update v${updateInfo!.latestVersion}',
+                            style: TextStyle(
+                              fontSize: 10.5.sp,
+                              fontWeight: FontWeight.w700,
+                              color: const Color(0xFF7C3AED),
+                            ),
+                          ),
+                        )
+                      : Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 8.w,
+                            vertical: 3.h,
+                          ),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFF0FDF4),
+                            borderRadius: BorderRadius.circular(12.r),
+                          ),
+                          child: Text(
+                            'Terbaru',
+                            style: TextStyle(
+                              fontSize: 10.5.sp,
+                              fontWeight: FontWeight.w700,
+                              color: const Color(0xFF16A34A),
+                            ),
+                          ),
+                        ),
+                ),
+                _buildDivider(),
+                _buildInfoTile(
+                  icon: Icons.system_update_rounded,
+                  label: 'Pembaruan Sistem',
+                  value: updateInfo?.hasUpdate == true
+                      ? 'Versi v${updateInfo!.latestVersion} tersedia (Tap untuk update)'
+                      : 'Periksa rilis terbaru di GitHub',
+                  iconBgColor: const Color(0xFFFAF5FF),
+                  iconColor: const Color(0xFF7C3AED),
+                  trailing: Icon(
+                    Icons.arrow_forward_ios_rounded,
+                    size: 13.sp,
+                    color: const Color(0xFF9CA3AF),
+                  ),
+                  onTap: _checkUpdateManual,
+                ),
+                _buildDivider(),
+                _buildInfoTile(
+                  icon: Icons.code_rounded,
+                  label: 'Repository GitHub & Rilis',
+                  value: 'allam1768/MyIDN_app',
+                  iconBgColor: const Color(0xFFF1F5F9),
+                  iconColor: const Color(0xFF334155),
+                  trailing: Icon(
+                    Icons.open_in_new_rounded,
+                    size: 14.sp,
+                    color: const Color(0xFF9CA3AF),
+                  ),
+                  onTap: _openGitHubRepo,
+                ),
+              ]),
               SizedBox(height: 20.h),
+
               // ==========================================
               // 5. TOMBOL LOGOUT
               // ==========================================
@@ -507,11 +678,15 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
     required IconData icon,
     required String label,
     required String value,
+    Widget? trailing,
+    VoidCallback? onTap,
+    Color? iconBgColor,
+    Color? iconColor,
   }) {
     final bool isUnset = value.trim().isEmpty || value == '-';
     final String displayValue = isUnset ? 'Belum diatur di LMS' : value;
 
-    return Padding(
+    final content = Padding(
       padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 10.h),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -520,10 +695,14 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
             width: 32.r,
             height: 32.r,
             decoration: BoxDecoration(
-              color: const Color(0xFFF3F4F6),
+              color: iconBgColor ?? const Color(0xFFF3F4F6),
               borderRadius: BorderRadius.circular(8.r),
             ),
-            child: Icon(icon, size: 16.sp, color: const Color(0xFF6B7280)),
+            child: Icon(
+              icon,
+              size: 16.sp,
+              color: iconColor ?? const Color(0xFF6B7280),
+            ),
           ),
           SizedBox(width: 12.w),
           Expanded(
@@ -553,8 +732,20 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
               ],
             ),
           ),
+          ?trailing,
         ],
       ),
     );
+
+    if (onTap != null) {
+      return Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          child: content,
+        ),
+      );
+    }
+    return content;
   }
 }

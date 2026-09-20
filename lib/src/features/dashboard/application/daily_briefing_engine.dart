@@ -4,6 +4,8 @@ import '../../jadwal_absensi/presentation/detail_absensi_page.dart';
 import '../../poin_kebaikan/presentation/poin_kebaikan_page.dart';
 import '../../tugas/presentation/detail_tugas_page.dart';
 import '../../tugas/presentation/tugas_page.dart';
+import '../../update/domain/models/app_update_info.dart';
+import '../../update/presentation/update_dialog.dart';
 import '../domain/models/daily_agenda_item.dart';
 import '../presentation/dashboard_providers.dart';
 import '../presentation/dashboard_utils.dart';
@@ -16,17 +18,19 @@ class DailyBriefingEngine {
 
   /// Menghasilkan daftar rekomendasi kartu agenda harian berdasarkan prioritas:
   /// 1. Kelas sedang berlangsung (Presensi Aktif) jika ada
-  /// 2. Kelas berikutnya yang akan datang hari ini
-  /// 3. Semua tugas pending yang belum dikerjakan
-  /// 4. Pengingat Laporan Ibadah jika belum diisi
-  /// 5. Pengingat Poin Kebaikan jika belum dicatat
-  /// 6. Apresiasi "Semua Selesai" jika seluruh agenda telah tuntas
+  /// 2. Notifikasi Pembaruan Aplikasi dari GitHub (jika ada update)
+  /// 3. Kelas berikutnya yang akan datang hari ini
+  /// 4. Semua tugas pending yang belum dikerjakan
+  /// 5. Pengingat Laporan Ibadah jika belum diisi
+  /// 6. Pengingat Poin Kebaikan jika belum dicatat
+  /// 7. Apresiasi "Semua Selesai" jika seluruh agenda telah tuntas
   static List<DailyAgendaItem> resolveItems({
     required List<dynamic> listKelas,
     required List<dynamic> listTugas,
     required int nowMinutes,
     required bool isIbadahDone,
     required bool isKebaikanDone,
+    AppUpdateInfo? updateInfo,
   }) {
     Map? ongoingClass;
     Map? upcomingClass;
@@ -96,7 +100,27 @@ class DailyBriefingEngine {
       );
     }
 
-    // 2. Kelas selanjutnya yang akan datang hari ini
+    // 2. Pembaruan Aplikasi dari GitHub jika versi baru tersedia
+    if (updateInfo != null && updateInfo.hasUpdate) {
+      items.add(
+        DailyAgendaItem(
+          badge: 'UPDATE TERSEDIA',
+          title: 'Versi Baru MyIDN v${updateInfo.latestVersion} Tersedia! 🎉',
+          subtitle: 'Tekan untuk melihat catatan rilis & unduh versi terbaru',
+          icon: Icons.rocket_launch_rounded,
+          buttonText: 'Lihat Pembaruan',
+          secondaryNotice:
+              'Versi terpasang: v${updateInfo.currentVersion} • Tap untuk info',
+          gradientColors: const [Color(0xFF8B5CF6), Color(0xFF6D28D9)],
+          buttonTextColor: const Color(0xFF0F172A),
+          onAction: (ctx, ref) async {
+            await UpdateDialog.show(ctx, updateInfo);
+          },
+        ),
+      );
+    }
+
+    // 3. Kelas selanjutnya yang akan datang hari ini
     if (upcomingClass != null) {
       final nama = upcomingClass['nama_kelas']?.toString() ?? 'Mata Kuliah';
       final rawM = upcomingClass['jam_mulai']?.toString() ?? '';
