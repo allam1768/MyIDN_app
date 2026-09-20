@@ -57,8 +57,6 @@ Dilengkapi dengan desain UI clean, modern, dan responsif serta dipersenjatai per
 | 🕌 **Laporan Ibadah Harian** | Checklist interaktif sholat 5 waktu berjamaah di masjid, tilawah Al-Qur'an, sholat sunnah rawatib/dhuha/tahajjud, dzikir pagi-petang, dan puasa sunnah. |
 | 🌟 **Poin Kebaikan Santri** | Integrasi cepat ke sistem pencatatan poin kebaikan mahasiswa IDN harian. |
 | 🔔 **Notifikasi Pengingat Otomatis** | Pengingat alarm tepat waktu sebelum jam kuliah dimulai dan alarm malam (22:00 WIB) untuk pengisian laporan ibadah & kebaikan. |
-| 🔐 **Anti-Piracy License Gatekeeper** | Sistem lisensi Ed25519 hardware-locked seumur hidup: 1 kode lisensi hanya dapat diaktifkan pada 1 perangkat HP pembeli saja. |
-| 🛠️ **In-App Key Studio (Admin Only)** | Menu khusus akun Allam Permata Putra untuk men-generate serial key bagi pembeli baru langsung dari aplikasi. |
 
 ---
 
