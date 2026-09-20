@@ -123,13 +123,6 @@ MyIDN dibangun dengan standar **Clean Architecture**, **SOLID**, dan **Separatio
 
 ---
 
-## 🧪 Kualitas Kode & Pengujian
-
-* **Static Analysis**: `dart analyze --fatal-infos` lolos dengan **0 Issues** (Clean Code).
-* **Code Formatting**: 100% mengikuti pedoman resmi *Effective Dart* (`dart format`).
-* **Automated Unit & Widget Tests**: Seluruh 35 skenario pengujian di folder `test/` lolos (`All tests passed!`).
-
----
 
 ## 👨‍💻 Author & Lisensi
 
