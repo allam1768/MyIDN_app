@@ -26,6 +26,9 @@ class LmsApiService {
     _dio = Dio(
       BaseOptions(
         baseUrl: LmsEndpoints.baseUrl,
+        connectTimeout: const Duration(seconds: 8),
+        receiveTimeout: const Duration(seconds: 8),
+        sendTimeout: const Duration(seconds: 8),
         followRedirects: false,
         validateStatus: (status) => status != null && status < 500,
         headers: {

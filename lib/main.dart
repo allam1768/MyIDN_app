@@ -7,9 +7,8 @@ import 'src/features/splash/presentation/splash_page.dart';
 import 'src/services/lms_api_service.dart';
 import 'src/services/notification_service.dart';
 
-void main() async {
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  await NotificationService.init();
   runApp(const ProviderScope(child: MyApp()));
 }
 
@@ -26,6 +25,11 @@ class _MyAppState extends ConsumerState<MyApp> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      NotificationService.init().catchError((e) {
+        debugPrint('[NotificationService] Background init error: $e');
+      });
+    });
     _lifecycleListener = AppLifecycleListener(
       onDetach: () {
         // Hapus sesi di BE ketika aplikasi di-close / ditutup

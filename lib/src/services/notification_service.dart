@@ -32,71 +32,81 @@ class NotificationService {
   static Future<void> init() async {
     if (_isInitialized) return;
 
-    // 1. Inisialisasi timezone database
-    tz.initializeTimeZones();
     try {
-      tz.setLocalLocation(tz.getLocation('Asia/Jakarta'));
-    } catch (_) {
-      // Fallback jika zona tidak ditemukan
-    }
+      // 1. Inisialisasi timezone database
+      try {
+        tz.initializeTimeZones();
+        tz.setLocalLocation(tz.getLocation('Asia/Jakarta'));
+      } catch (_) {
+        // Fallback jika zona tidak ditemukan
+      }
 
-    // 2. Setting platform
-    const androidSettings = AndroidInitializationSettings('ic_notification');
-    const darwinSettings = DarwinInitializationSettings(
-      requestAlertPermission: true,
-      requestBadgePermission: true,
-      requestSoundPermission: true,
-    );
-    const linuxSettings = LinuxInitializationSettings(
-      defaultActionName: 'Open notification',
-    );
+      // 2. Setting platform
+      const androidSettings = AndroidInitializationSettings('ic_notification');
+      const darwinSettings = DarwinInitializationSettings(
+        requestAlertPermission: false,
+        requestBadgePermission: false,
+        requestSoundPermission: false,
+      );
+      const linuxSettings = LinuxInitializationSettings(
+        defaultActionName: 'Open notification',
+      );
 
-    const initSettings = InitializationSettings(
-      android: androidSettings,
-      iOS: darwinSettings,
-      macOS: darwinSettings,
-      linux: linuxSettings,
-    );
+      const initSettings = InitializationSettings(
+        android: androidSettings,
+        iOS: darwinSettings,
+        macOS: darwinSettings,
+        linux: linuxSettings,
+      );
 
-    await _plugin.initialize(
-      settings: initSettings,
-      onDidReceiveNotificationResponse: (details) {
-        debugPrint(
-          '[NotificationService] Notifikasi diklik: ${details.payload}',
+      await _plugin.initialize(
+        settings: initSettings,
+        onDidReceiveNotificationResponse: (details) {
+          debugPrint(
+            '[NotificationService] Notifikasi diklik: ${details.payload}',
+          );
+        },
+      );
+
+      // 3. Buat notification channels di Android
+      final androidImpl = _plugin
+          .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin
+          >();
+      if (androidImpl != null) {
+        await androidImpl.createNotificationChannel(
+          const AndroidNotificationChannel(
+            _classChannelId,
+            _classChannelName,
+            description: _classChannelDesc,
+            importance: Importance.high,
+          ),
         );
-      },
-    );
 
-    // 3. Buat notification channels di Android
-    final androidImpl = _plugin
-        .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin
-        >();
-    if (androidImpl != null) {
-      await androidImpl.createNotificationChannel(
-        const AndroidNotificationChannel(
-          _classChannelId,
-          _classChannelName,
-          description: _classChannelDesc,
-          importance: Importance.high,
-        ),
-      );
+        await androidImpl.createNotificationChannel(
+          const AndroidNotificationChannel(
+            _nightlyChannelId,
+            _nightlyChannelName,
+            description: _nightlyChannelDesc,
+            importance: Importance.high,
+          ),
+        );
+      }
 
-      await androidImpl.createNotificationChannel(
-        const AndroidNotificationChannel(
-          _nightlyChannelId,
-          _nightlyChannelName,
-          description: _nightlyChannelDesc,
-          importance: Importance.high,
-        ),
-      );
-
-      // Request permission untuk Android 13+
-      await requestPermission();
+      _isInitialized = true;
+      debugPrint('[NotificationService] Inisialisasi berhasil.');
+    } catch (e) {
+      debugPrint('[NotificationService] Gagal inisialisasi notifikasi: $e');
     }
+  }
 
-    _isInitialized = true;
-    debugPrint('[NotificationService] Inisialisasi berhasil.');
+  static bool _permissionRequested = false;
+
+  /// Meminta izin notifikasi sekali secara aman setelah antarmuka aktif
+  static Future<bool> requestPermissionOnce() async {
+    if (_permissionRequested) return true;
+    _permissionRequested = true;
+    return await requestPermission();
   }
 
   /// Meminta izin notifikasi (Android 13+ dan iOS)

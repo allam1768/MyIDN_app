@@ -87,6 +87,11 @@ class DashboardPage extends ConsumerWidget {
       });
     }
 
+    // Minta izin notifikasi secara aman setelah antarmuka dashboard siap
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      NotificationService.requestPermissionOnce();
+    });
+
     final dashboardAsync = ref.watch(dashboardMahasiswaProvider);
     final kelasAsync = ref.watch(kelasHarianProvider);
     final tugasAsync = ref.watch(tugasHarianProvider);
