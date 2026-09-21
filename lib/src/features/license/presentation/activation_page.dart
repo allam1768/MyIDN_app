@@ -74,9 +74,9 @@ class _ActivationPageState extends ConsumerState<ActivationPage> {
   Future<void> _openWhatsApp() async {
     if (_deviceId == null) return;
     final message =
-        'Halo Admin, saya ingin membeli dan mengaktivasi lisensi aplikasi MyIDN.\n\n'
+        'Halo Admin Allam, saya ingin membeli lisensi resmi aplikasi MyIDN seharga Rp 25.000.\n\n'
         '📱 Kode Perangkat Saya:\n$_deviceId\n\n'
-        'Berikut saya lampirkan foto/screenshot bukti transfer pembayaran QRIS untuk proses aktivasi lisensi. Terima kasih!';
+        'Berikut saya lampirkan foto/screenshot bukti transfer pembayaran QRIS sebesar Rp 25.000 untuk proses pembuatan Serial Key resmi. Terima kasih!';
     final uri = Uri.parse(
       'https://wa.me/?text=${Uri.encodeComponent(message)}',
     );
@@ -289,9 +289,44 @@ class _ActivationPageState extends ConsumerState<ActivationPage> {
                           ),
                         ],
                       ),
-                      SizedBox(height: 6.h),
+                      SizedBox(height: 10.h),
+
+                      // Badge Nominal Harga 25k
+                      Container(
+                        padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 6.h),
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [Color(0xFF047857), Color(0xFF059669)],
+                          ),
+                          borderRadius: BorderRadius.circular(20.r),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(0xFF059669).withValues(alpha: 0.28),
+                              blurRadius: 8.r,
+                              offset: Offset(0, 3.h),
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.sell_rounded, size: 14.sp, color: Colors.white),
+                            SizedBox(width: 6.w),
+                            Text(
+                              'Harga Lisensi: Rp 25.000 (Sekali Bayar)',
+                              style: TextStyle(
+                                fontSize: 12.sp,
+                                fontWeight: FontWeight.w800,
+                                color: Colors.white,
+                                letterSpacing: 0.3,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(height: 10.h),
                       Text(
-                        'Scan barcode QRIS di bawah ini menggunakan GoPay, OVO, DANA, ShopeePay, BCA, atau Mobile Banking apa saja:',
+                        'Scan barcode QRIS di bawah ini dan transfer sebesar Rp 25.000 menggunakan GoPay, OVO, DANA, ShopeePay, BCA, atau Mobile Banking apa saja:',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 11.5.sp,
@@ -327,6 +362,15 @@ class _ActivationPageState extends ConsumerState<ActivationPage> {
                         ),
                       ),
                       SizedBox(height: 10.h),
+                      Text(
+                        'Nominal Transfer: Rp 25.000 (Pas)',
+                        style: TextStyle(
+                          fontSize: 13.5.sp,
+                          fontWeight: FontWeight.w900,
+                          color: const Color(0xFF047857),
+                        ),
+                      ),
+                      SizedBox(height: 6.h),
                       Container(
                         padding: EdgeInsets.symmetric(
                           horizontal: 10.w,

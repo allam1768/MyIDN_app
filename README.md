@@ -10,6 +10,7 @@
   [![Dart](https://img.shields.io/badge/Dart-3.x-0175C2?style=for-the-badge&logo=dart&logoColor=white)](https://dart.dev)
   [![State Management](https://img.shields.io/badge/State-Riverpod_2.x-1389FD?style=for-the-badge&logo=riverpod&logoColor=white)](https://riverpod.dev)
   [![Security](https://img.shields.io/badge/License-Ed25519_Hardware_Locked-22C55E?style=for-the-badge&logo=shield&logoColor=white)](#-sistem-lisensi-hardware-locked-ed25519)
+  [![Pricing](https://img.shields.io/badge/Biaya_Lisensi-Rp_25.000_(Lifetime)-047857?style=for-the-badge&logo=cashapp&logoColor=white)](#-biaya-lisensi--cara-pembelian-di-dalam-aplikasi)
   [![Latest Release](https://img.shields.io/github/v/release/allam1768/MyIDN_app?style=for-the-badge&color=blue&logo=github)](https://github.com/allam1768/MyIDN_app/releases)
 
   <br />
@@ -24,8 +25,19 @@
 
 ---
 
+## 💳 Biaya Lisensi & Cara Pembelian di Dalam Aplikasi
 
-##  Tentang MyIDN
+> [!IMPORTANT]
+> **Aplikasi Berbayar (In-App Activation):**
+> MyIDN adalah aplikasi berbayar dengan lisensi resmi seumur hidup (*Lifetime Access*).
+> 
+> * 🏷️ **Nominal Harga**: **Rp 25.000 (25k)** *(Sekali bayar seumur hidup, tanpa biaya langganan bulanan)*.
+> * 📲 **Metode Pembayaran**: Scan barcode **QRIS Nasional** yang tersedia langsung di dalam menu aktivasi aplikasi. Bebas biaya admin dan mendukung semua jenis e-wallet (GoPay, OVO, DANA, ShopeePay, LinkAja) serta Mobile Banking (BCA, Mandiri, BRI, BNI, BSI, Bank Jago, Seabank, dll).
+> * 🔑 **Tipe Lisensi**: *Hardware-Locked Ed25519* — Lisensi terkunci aman pada perangkat Android pembeli.
+
+---
+
+## 📖 Tentang MyIDN
 
 **MyIDN** adalah aplikasi asisten pintar yang dirancang khusus untuk mahasiswa Politeknik IDN Bogor. Aplikasi ini mengotomatiskan seluruh alur perkuliahan: mulai dari pengingat jadwal kelas harian, pengisian presensi absensi, monitoring tugas & deadline, pengajuan surat izin sakit resmi berformat PDF, hingga pelaporan ibadah dan poin kebaikan santri secara terpusat.
 
@@ -33,7 +45,7 @@ Dilengkapi dengan desain UI clean, modern, dan responsif serta dipersenjatai per
 
 ---
 
-##  Fitur Unggulan
+## ✨ Fitur Unggulan
 
 | Fitur | Deskripsi |
 | :--- | :--- |
@@ -48,27 +60,37 @@ Dilengkapi dengan desain UI clean, modern, dan responsif serta dipersenjatai per
 
 ---
 
-##  Cara Download & Install lewat GitHub
+## 🚀 Cara Download & Pasang lewat GitHub
 
 Pengguna dapat mengunduh dan memasang aplikasi MyIDN langsung dari repositori GitHub ini:
 
 ### Langkah 1: Unduh Berkas APK
 1. Buka halaman **[Releases](https://github.com/allam1768/MyIDN_app/releases)**.
-2. Pada bagian release terbaru (*Latest*), unduh berkas **`MyIDN-release.apk`**.
+2. Pada bagian release terbaru (*Latest*), unduh berkas **`MyIDN-v1.0.4.apk`** (atau versi terbaru yang tersedia).
 
 ### Langkah 2: Pasang (Install) di Android
-1. Buka berkas `MyIDN-release.apk` yang telah diunduh pada smartphone Android Anda.
+1. Buka berkas APK yang telah diunduh pada smartphone Android Anda.
 2. Tekan **Install**.
 3. **Catatan Google Play Protect & Update Bersih**:
    * Karena aplikasi ini didistribusikan langsung (*direct sideload*), Google Play Protect mungkin menampilkan peringatan *"Blocked by Play Protect"* atau *"Aplikasi dari sumber tidak dikenal"*.
    * Tekan **Rincian lainnya (More details)** > pilih **Tetap instal (Install anyway)**.
    * **Tips Update**: Jika sebelumnya Anda sudah memasang versi lama (development/debug), **copot pemasangan (uninstall)** versi lama tersebut satu kali saja sebelum menginstal versi bertanda tangan resmi ini untuk menghindari konflik paket. Semua update versi berikutnya dapat langsung ditimpa (in-place update).
 
-### Langkah 3: Aktivasi & Masuk
+### Langkah 3: Pembayaran & Aktivasi di Dalam Aplikasi
 1. Buka aplikasi **MyIDN**.
-2. Pada layar **Aktivasi Lisensi**, salin **Kode Perangkat** (contoh: `IDN-7F8A-9B21`).
-3. Kirimkan Kode Perangkat tersebut ke Developer/Admin ([Allam Permata Putra](#-author--lisensi)) untuk mendapatkan **Serial Key Resmi**.
-4. Tempelkan Serial Key dan tekan **Aktivasi Sekarang**. Aplikasi akan aktif permanen seumur hidup!
+2. Anda akan otomatis masuk ke halaman **Aktivasi Lisensi**.
+3. **Langkah 1 (Pembayaran QRIS)**:
+   * Perhatikan nominal harga lisensi resmi: **Rp 25.000**.
+   * Scan barcode QRIS yang tampil di layar aplikasi menggunakan GoPay, OVO, DANA, BCA, atau m-Banking pilihan Anda.
+   * Lakukan transfer sejumlah **Rp 25.000 (Pas)** dan simpan bukti transfernya.
+4. **Langkah 2 (Kirim Bukti Bayar & Kode Perangkat)**:
+   * Tekan tombol hijau **Kirim Kode & Bukti Bayar ke WhatsApp**.
+   * WhatsApp akan terbuka otomatis dengan template pesan berisi **Kode Perangkat** Anda.
+   * Lampirkan foto/screenshot bukti transfer QRIS lalu kirim ke WhatsApp Admin ([Allam Permata Putra](#-author--lisensi)).
+5. **Langkah 3 (Aktivasi)**:
+   * Admin akan memverifikasi pembayaran dan mengirimkan **Serial Key Resmi**.
+   * Salin Serial Key tersebut, tempelkan ke kolom input di aplikasi MyIDN, dan tekan **Aktivasi Sekarang**.
+   * Aplikasi berhasil aktif permanen seumur hidup! Selamat menggunakan MyIDN!
 
 ---
 

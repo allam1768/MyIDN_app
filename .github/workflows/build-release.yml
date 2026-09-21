@@ -49,7 +49,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          name: "[URGENT] MyIDN App Release ${{ github.ref_name }}"
+          name: "MyIDN App Release ${{ github.ref_name }}"
           tag_name: ${{ github.ref_name }}
           files: |
             release-artifacts/MyIDN-${{ github.ref_name }}.apk
@@ -58,10 +58,14 @@ jobs:
           prerelease: false
           generate_release_notes: true
           body: |
-            ## 🚨 [URGENT] MyIDN App Release ${{ github.ref_name }}
+            ## 📱 MyIDN App Release ${{ github.ref_name }}
             
             > [!IMPORTANT]
-            > **Pembaruan Mendesak [URGENT]:** Pembaruan ini memperbaiki masalah macet pada splash screen dan menerapkan kunci rilis resmi permanen. Wajib perbarui ke versi ini.
+            > 💳 **Informasi Lisensi Berbayar (In-App Activation):**
+            > Aplikasi MyIDN merupakan aplikasi berbayar dengan lisensi permanen (*Lifetime License* seumur hidup).
+            > - **Harga Lisensi**: **Rp 25.000 (Sekali bayar / Lifetime)**
+            > - **Metode Pembayaran**: Scan barcode **QRIS** langsung di halaman aktivasi aplikasi (mendukung GoPay, OVO, DANA, ShopeePay, BCA, Mandiri, BRI, Bank Jago, atau e-wallet/bank apa saja).
+            > - **Cara Aktivasi**: Scan QRIS -> Transfer Rp 25.000 (Pas) -> Kirim Kode Perangkat & Bukti Transfer ke WhatsApp Admin -> Dapatkan Serial Key Resmi untuk aktivasi seumur hidup.
             
             Unduh berkas APK siap pakai di bawah ini dan pasang langsung ke perangkat Android Anda.
             
@@ -69,10 +73,12 @@ jobs:
             * **[MyIDN-${{ github.ref_name }}.apk](https://github.com/allam1768/MyIDN_app/releases/download/${{ github.ref_name }}/MyIDN-${{ github.ref_name }}.apk)**
             * [MyIDN-release.apk](https://github.com/allam1768/MyIDN_app/releases/download/${{ github.ref_name }}/MyIDN-release.apk)
             
-            ### 🚀 Panduan Instalasi
-            1. Jika sebelumnya Anda memasang versi lama (development/debug), **copot pemasangan (uninstall)** versi lama tersebut satu kali saja untuk menghindari bentrok paket.
-            2. Unduh berkas **MyIDN-${{ github.ref_name }}.apk**.
-            3. Buka berkas dan tekan **Install**.
-            4. Jika muncul notifikasi Google Play Protect (*Blocked by Play Protect*), pilih **More details (Rincian lainnya)** lalu klik **Install anyway (Tetap instal)**.
-            5. Buka aplikasi dan nikmati kemudahan manajemen perkuliahan IDN!
+            ### 🚀 Panduan Instalasi & Aktivasi
+            1. Unduh berkas **MyIDN-${{ github.ref_name }}.apk**.
+            2. Buka berkas dan tekan **Install** (Jika muncul notifikasi Play Protect, pilih *More details / Rincian lainnya* -> *Install anyway / Tetap instal*).
+            3. Buka aplikasi **MyIDN**.
+            4. Di halaman **Aktivasi Lisensi**, scan kode QRIS dan lakukan transfer **Rp 25.000**.
+            5. Tekan tombol **Kirim Kode & Bukti Bayar ke WhatsApp** untuk mengirim Kode Perangkat beserta foto bukti transfer ke Admin.
+            6. Tempelkan Serial Key yang diterima dari Admin dan tekan **Aktivasi Sekarang**. Aplikasi akan aktif permanen seumur hidup!
+
 
