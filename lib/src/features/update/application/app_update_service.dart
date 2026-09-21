@@ -5,7 +5,7 @@ import '../domain/models/app_update_info.dart';
 /// Layanan pengecekan pembaruan versi aplikasi dari GitHub Releases API
 class AppUpdateService {
   /// Versi aplikasi saat ini (selaras dengan pubspec.yaml)
-  static const String currentVersion = '1.0.2';
+  static const String currentVersion = '1.0.3';
 
   static const String githubRepoOwner = 'allam1768';
   static const String githubRepoName = 'MyIDN_app';
