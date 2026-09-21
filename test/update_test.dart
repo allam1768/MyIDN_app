@@ -187,4 +187,79 @@ void main() {
       expect(hasUpdateBadge, isFalse);
     });
   });
+
+  group('AppUpdateService.resolveDownloadUrl Tests', () {
+    test('prioritizes versioned APK over generic release APK', () {
+      final assets = [
+        {
+          'name': 'MyIDN-release.apk',
+          'browser_download_url':
+              'https://github.com/allam1768/MyIDN_app/releases/download/v1.0.3/MyIDN-release.apk',
+        },
+        {
+          'name': 'MyIDN-v1.0.3.apk',
+          'browser_download_url':
+              'https://github.com/allam1768/MyIDN_app/releases/download/v1.0.3/MyIDN-v1.0.3.apk',
+        },
+      ];
+
+      final url = AppUpdateService.resolveDownloadUrl(
+        assets,
+        cleanTag: '1.0.3',
+      );
+
+      expect(url, contains('MyIDN-v1.0.3.apk'));
+      expect(url, isNot(contains('MyIDN-release.apk')));
+    });
+
+    test('selects versioned APK regardless of asset order', () {
+      final assets = [
+        {
+          'name': 'MyIDN-v1.0.3.apk',
+          'browser_download_url':
+              'https://github.com/allam1768/MyIDN_app/releases/download/v1.0.3/MyIDN-v1.0.3.apk',
+        },
+        {
+          'name': 'MyIDN-release.apk',
+          'browser_download_url':
+              'https://github.com/allam1768/MyIDN_app/releases/download/v1.0.3/MyIDN-release.apk',
+        },
+      ];
+
+      final url = AppUpdateService.resolveDownloadUrl(
+        assets,
+        cleanTag: '1.0.3',
+      );
+
+      expect(url, contains('MyIDN-v1.0.3.apk'));
+    });
+
+    test('falls back to generic APK if no versioned APK exists', () {
+      final assets = [
+        {
+          'name': 'MyIDN-release.apk',
+          'browser_download_url':
+              'https://github.com/allam1768/MyIDN_app/releases/download/v1.0.3/MyIDN-release.apk',
+        },
+      ];
+
+      final url = AppUpdateService.resolveDownloadUrl(
+        assets,
+        cleanTag: '1.0.3',
+      );
+
+      expect(url, contains('MyIDN-release.apk'));
+    });
+
+    test('falls back to fallbackUrl when no APK exists in assets', () {
+      const fallback = 'https://github.com/allam1768/MyIDN_app/releases/tag/v1.0.3';
+      final url = AppUpdateService.resolveDownloadUrl(
+        [],
+        cleanTag: '1.0.3',
+        fallbackUrl: fallback,
+      );
+
+      expect(url, fallback);
+    });
+  });
 }

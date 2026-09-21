@@ -44,21 +44,13 @@ class AppUpdateService {
         final htmlUrl = (data['html_url'] ?? releasesWebUrl).toString();
 
         // Cari tautan langsung berkas APK di dalam array assets
-        String downloadUrl = htmlUrl;
+        // Prioritaskan berkas yang memuat nama versi (contoh: MyIDN-v1.0.3.apk) bukan file release generik
         final assets = data['assets'];
-        if (assets is List) {
-          for (final asset in assets) {
-            if (asset is Map) {
-              final name = (asset['name'] ?? '').toString().toLowerCase();
-              final browserUrl =
-                  (asset['browser_download_url'] ?? '').toString();
-              if (name.endsWith('.apk') && browserUrl.isNotEmpty) {
-                downloadUrl = browserUrl;
-                break;
-              }
-            }
-          }
-        }
+        final String downloadUrl = resolveDownloadUrl(
+          assets is List ? assets : null,
+          cleanTag: cleanTag,
+          fallbackUrl: htmlUrl,
+        );
 
         final bool hasUpdate = isNewerVersion(cleanTag, currentVersion);
         final bool isForceUpdate = hasUpdate &&
@@ -83,6 +75,46 @@ class AppUpdateService {
       }
     }
     return null;
+  }
+
+  /// Menentukan URL unduhan APK terbaik dari daftar assets GitHub Release.
+  /// Memprioritaskan berkas yang memuat nama versi (contoh: MyIDN-v1.0.3.apk)
+  /// dan menghindari berkas generik 'release' jika versi spesifik tersedia.
+  static String resolveDownloadUrl(
+    List<dynamic>? assets, {
+    String cleanTag = '',
+    String fallbackUrl = releasesWebUrl,
+  }) {
+    if (assets == null || assets.isEmpty) return fallbackUrl;
+
+    String? versionedApkUrl;
+    String? genericApkUrl;
+    final lowerTag = cleanTag.toLowerCase();
+
+    for (final asset in assets) {
+      if (asset is! Map) continue;
+      final rawName = (asset['name'] ?? '').toString();
+      final name = rawName.toLowerCase();
+      final browserUrl = (asset['browser_download_url'] ?? '').toString();
+
+      if (name.endsWith('.apk') && browserUrl.isNotEmpty) {
+        // Cek apakah berkas memuat indikator versi spesifik
+        final bool hasVersionInName = (lowerTag.isNotEmpty && name.contains(lowerTag)) ||
+            RegExp(r'v?\d+\.\d+').hasMatch(name);
+        final bool isGenericRelease = name.contains('release') && !name.contains(lowerTag);
+
+        if (hasVersionInName && !isGenericRelease) {
+          // Pilihan utama: berkas yang secara eksplisit memuat versi
+          return browserUrl;
+        } else if (hasVersionInName) {
+          versionedApkUrl ??= browserUrl;
+        } else {
+          genericApkUrl ??= browserUrl;
+        }
+      }
+    }
+
+    return versionedApkUrl ?? genericApkUrl ?? fallbackUrl;
   }
 
   /// Mengecek apakah rilis ini merupakan pembaruan wajib / darurat (Force Update)
