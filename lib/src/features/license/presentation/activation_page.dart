@@ -74,7 +74,9 @@ class _ActivationPageState extends ConsumerState<ActivationPage> {
   Future<void> _openWhatsApp() async {
     if (_deviceId == null) return;
     final message =
-        'Halo Admin, saya ingin aktivasi aplikasi IDN Reminder.\n\nKode Perangkat saya:\n$_deviceId';
+        'Halo Admin Allam, saya ingin membeli dan mengaktivasi lisensi aplikasi MyIDN.\n\n'
+        '📱 Kode Perangkat Saya:\n$_deviceId\n\n'
+        'Berikut saya lampirkan foto/screenshot bukti transfer pembayaran QRIS untuk proses aktivasi lisensi. Terima kasih!';
     final uri = Uri.parse(
       'https://wa.me/?text=${Uri.encodeComponent(message)}',
     );
@@ -172,7 +174,7 @@ class _ActivationPageState extends ConsumerState<ActivationPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                // 1. Icon Badge Hero
+                // 1. Icon Badge Hero & Premium Notice
                 Container(
                   width: 68.r,
                   height: 68.r,
@@ -193,17 +195,48 @@ class _ActivationPageState extends ConsumerState<ActivationPage> {
                   ),
                   child: Center(
                     child: Icon(
-                      Icons.key_rounded,
-                      color: Colors.white,
-                      size: 32.sp,
+                      Icons.workspace_premium_rounded,
+                      color: const Color(0xFFFBBF24),
+                      size: 34.sp,
                     ),
                   ),
                 ),
-                SizedBox(height: 20.h),
+                SizedBox(height: 16.h),
+
+                // Badge Aplikasi Berbayar
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 4.h),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFEF3C7),
+                    borderRadius: BorderRadius.circular(20.r),
+                    border: Border.all(color: const Color(0xFFFCD34D)),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.verified_rounded,
+                        size: 14.sp,
+                        color: const Color(0xFFD97706),
+                      ),
+                      SizedBox(width: 6.w),
+                      Text(
+                        'APLIKASI BERBAYAR • LISENSI SEUMUR HIDUP',
+                        style: TextStyle(
+                          fontSize: 10.5.sp,
+                          fontWeight: FontWeight.w800,
+                          color: const Color(0xFF92400E),
+                          letterSpacing: 0.3,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 12.h),
 
                 // 2. Headline & Subtitle
                 Text(
-                  'Aktivasi Perangkat',
+                  'Aktivasi Lisensi MyIDN',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 22.sp,
@@ -214,17 +247,110 @@ class _ActivationPageState extends ConsumerState<ActivationPage> {
                 ),
                 SizedBox(height: 6.h),
                 Text(
-                  'Aplikasi ini terkunci khusus untuk perangkat Anda. Masukkan Serial Key untuk mengaktifkan akses selamanya.',
+                  'Aplikasi ini merupakan software berbayar untuk mahasiswa Politeknik IDN. Satu lisensi berlaku permanen selamanya dan terkunci aman pada perangkat ini.',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 13.sp,
+                    fontSize: 12.5.sp,
                     color: const Color(0xFF6B7280),
-                    height: 1.4,
+                    height: 1.45,
                   ),
                 ),
-                SizedBox(height: 28.h),
+                SizedBox(height: 24.h),
 
-                // 3. Card Kode Perangkat
+                // 3. Card Pembayaran QRIS
+                Container(
+                  width: double.infinity,
+                  padding: EdgeInsets.all(16.r),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF8FAFC),
+                    borderRadius: BorderRadius.circular(16.r),
+                    border: Border.all(color: const Color(0xFFE2E8F0)),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.qr_code_2_rounded,
+                            size: 18.sp,
+                            color: const Color(0xFF1D4ED8),
+                          ),
+                          SizedBox(width: 8.w),
+                          Text(
+                            'LANGKAH 1: PEMBAYARAN VIA QRIS',
+                            style: TextStyle(
+                              fontSize: 11.5.sp,
+                              fontWeight: FontWeight.w800,
+                              color: const Color(0xFF1E3A8A),
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 6.h),
+                      Text(
+                        'Scan barcode QRIS di bawah ini menggunakan GoPay, OVO, DANA, ShopeePay, BCA, atau Mobile Banking apa saja:',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 11.5.sp,
+                          color: const Color(0xFF64748B),
+                          height: 1.35,
+                        ),
+                      ),
+                      SizedBox(height: 14.h),
+
+                      // Tampilan Gambar QRIS
+                      Container(
+                        padding: EdgeInsets.all(12.r),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(16.r),
+                          border: Border.all(color: const Color(0xFFCBD5E1)),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.06),
+                              blurRadius: 12.r,
+                              offset: Offset(0, 4.h),
+                            ),
+                          ],
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(8.r),
+                          child: Image.asset(
+                            'assets/dokumen/qris.png',
+                            width: 220.w,
+                            height: 220.w,
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 10.h),
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 10.w,
+                          vertical: 3.h,
+                        ),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF1F5F9),
+                          borderRadius: BorderRadius.circular(8.r),
+                        ),
+                        child: Text(
+                          '⚡ QRIS Nasional Resmi • Bebas Biaya Admin',
+                          style: TextStyle(
+                            fontSize: 10.5.sp,
+                            fontWeight: FontWeight.w600,
+                            color: const Color(0xFF475569),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 18.h),
+
+                // 4. Card Kode Perangkat & Konfirmasi Bukti Pembayaran
                 Container(
                   width: double.infinity,
                   padding: EdgeInsets.all(16.r),
@@ -240,11 +366,11 @@ class _ActivationPageState extends ConsumerState<ActivationPage> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            'KODE PERANGKAT ANDA',
+                            'LANGKAH 2: KODE PERANGKAT & BUKTI BAYAR',
                             style: TextStyle(
-                              fontSize: 10.5.sp,
-                              fontWeight: FontWeight.w700,
-                              color: const Color(0xFF64748B),
+                              fontSize: 11.sp,
+                              fontWeight: FontWeight.w800,
+                              color: const Color(0xFF1E3A8A),
                               letterSpacing: 0.5,
                             ),
                           ),
@@ -290,18 +416,40 @@ class _ActivationPageState extends ConsumerState<ActivationPage> {
                         ),
                       ),
                       SizedBox(height: 8.h),
-                      Text(
-                        'Kirimkan kode ini kepada Admin untuk menerima Serial Key yang terikat pada HP ini.',
-                        style: TextStyle(
-                          fontSize: 11.5.sp,
-                          color: const Color(0xFF64748B),
-                          height: 1.35,
+                      Container(
+                        padding: EdgeInsets.all(10.r),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFFFFBEB),
+                          borderRadius: BorderRadius.circular(8.r),
+                          border: Border.all(color: const Color(0xFFFDE68A)),
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Icon(
+                              Icons.info_outline_rounded,
+                              size: 15.sp,
+                              color: const Color(0xFFB45309),
+                            ),
+                            SizedBox(width: 8.w),
+                            Expanded(
+                              child: Text(
+                                'PENTING: Mohon kirimkan Kode Perangkat ini ke WhatsApp Admin beserta lampiran FOTO / SCREENSHOT BUKTI TRANSFER QRIS agar lisensi langsung dibuatkan.',
+                                style: TextStyle(
+                                  fontSize: 11.sp,
+                                  color: const Color(0xFF92400E),
+                                  fontWeight: FontWeight.w600,
+                                  height: 1.35,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                       SizedBox(height: 12.h),
                       SizedBox(
                         width: double.infinity,
-                        height: 40.h,
+                        height: 42.h,
                         child: OutlinedButton.icon(
                           style: OutlinedButton.styleFrom(
                             foregroundColor: const Color(0xFF059669),
@@ -314,9 +462,9 @@ class _ActivationPageState extends ConsumerState<ActivationPage> {
                           onPressed: _openWhatsApp,
                           icon: Icon(Icons.chat_rounded, size: 16.sp),
                           label: Text(
-                            'Kirim Kode ke WhatsApp Admin',
+                            'Kirim Kode & Bukti Transfer ke Admin',
                             style: TextStyle(
-                              fontSize: 12.5.sp,
+                              fontSize: 12.sp,
                               fontWeight: FontWeight.w700,
                             ),
                           ),
@@ -325,17 +473,17 @@ class _ActivationPageState extends ConsumerState<ActivationPage> {
                     ],
                   ),
                 ),
-                SizedBox(height: 20.h),
+                SizedBox(height: 18.h),
 
-                // 4. Input Serial Key
+                // 5. Input Serial Key
                 Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    'MASUKKAN SERIAL KEY',
+                    'LANGKAH 3: MASUKKAN SERIAL KEY RESMI',
                     style: TextStyle(
                       fontSize: 11.sp,
-                      fontWeight: FontWeight.w700,
-                      color: const Color(0xFF475569),
+                      fontWeight: FontWeight.w800,
+                      color: const Color(0xFF1E3A8A),
                       letterSpacing: 0.5,
                     ),
                   ),
@@ -350,7 +498,7 @@ class _ActivationPageState extends ConsumerState<ActivationPage> {
                     color: const Color(0xFF0F172A),
                   ),
                   decoration: InputDecoration(
-                    hintText: 'Tempel serial key (IDN-KEY-...) di sini',
+                    hintText: 'Tempel serial key resmi (IDN-KEY-...) di sini',
                     hintStyle: TextStyle(
                       fontSize: 12.sp,
                       color: const Color(0xFF94A3B8),
@@ -409,9 +557,9 @@ class _ActivationPageState extends ConsumerState<ActivationPage> {
                     ],
                   ),
                 ],
-                SizedBox(height: 24.h),
+                SizedBox(height: 20.h),
 
-                // 5. Tombol Aktivasi Utama
+                // 6. Tombol Aktivasi Utama
                 SizedBox(
                   width: double.infinity,
                   height: 48.h,
