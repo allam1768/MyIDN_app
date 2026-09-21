@@ -74,7 +74,7 @@ class _ActivationPageState extends ConsumerState<ActivationPage> {
   Future<void> _openWhatsApp() async {
     if (_deviceId == null) return;
     final message =
-        'Halo Admin Allam, saya ingin membeli dan mengaktivasi lisensi aplikasi MyIDN.\n\n'
+        'Halo Admin, saya ingin membeli dan mengaktivasi lisensi aplikasi MyIDN.\n\n'
         '📱 Kode Perangkat Saya:\n$_deviceId\n\n'
         'Berikut saya lampirkan foto/screenshot bukti transfer pembayaran QRIS untuk proses aktivasi lisensi. Terima kasih!';
     final uri = Uri.parse(
