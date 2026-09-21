@@ -101,3 +101,7 @@ cookies.txt
 .env
 .env.*
 !.env.example
+secrets.json
+lib/src/constants/app_secrets.dart
+lib/src/constants/admin_secret.dart
+

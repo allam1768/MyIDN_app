@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../../constants/admin_contact.dart';
 import '../../auth/presentation/login_page.dart';
 import '../application/device_identity_service.dart';
 import '../application/license_service.dart';
@@ -77,9 +78,7 @@ class _ActivationPageState extends ConsumerState<ActivationPage> {
         'Halo Admin Allam, saya ingin membeli lisensi resmi aplikasi MyIDN seharga Rp 25.000.\n\n'
         '📱 Kode Perangkat Saya:\n$_deviceId\n\n'
         'Berikut saya lampirkan foto/screenshot bukti transfer pembayaran QRIS sebesar Rp 25.000 untuk proses pembuatan Serial Key resmi. Terima kasih!';
-    final uri = Uri.parse(
-      'https://wa.me/?text=${Uri.encodeComponent(message)}',
-    );
+    final uri = AdminContactConfig.buildWhatsAppUri(message);
     try {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     } catch (_) {

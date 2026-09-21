@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../../constants/admin_contact.dart';
 import '../application/device_identity_service.dart';
 import '../application/license_service.dart';
 
@@ -81,9 +82,7 @@ class _ActivationModalState extends ConsumerState<ActivationModal> {
     if (_deviceId == null) return;
     final message =
         'Halo Admin, saya ingin aktivasi IDN Reminder Pro Seumur Hidup.\n\nKode Perangkat saya:\n$_deviceId';
-    final uri = Uri.parse(
-      'https://wa.me/?text=${Uri.encodeComponent(message)}',
-    );
+    final uri = AdminContactConfig.buildWhatsAppUri(message);
     try {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     } catch (_) {

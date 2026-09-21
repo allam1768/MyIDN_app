@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:cryptography/cryptography.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:reminder/src/constants/admin_contact.dart';
 import 'package:reminder/src/features/license/application/license_generator_service.dart';
 import 'package:reminder/src/features/license/application/license_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -137,5 +138,20 @@ void main() {
         expect(waMessage.contains(item.serialKey), isTrue);
       },
     );
+
+    test('AdminContactConfig decodes protected number and builds correct WhatsApp URI', () {
+      final number = AdminContactConfig.adminWhatsAppNumber;
+      expect(number.isNotEmpty, isTrue);
+      expect(number.startsWith('628'), isTrue);
+      expect(number.length, equals(13));
+
+      const testMsg = 'Halo Admin, saya ingin membeli lisensi.';
+      final uri = AdminContactConfig.buildWhatsAppUri(testMsg);
+      expect(uri.scheme, equals('https'));
+      expect(uri.host, equals('wa.me'));
+      expect(uri.path, equals('/$number'));
+      expect(uri.queryParameters['text'], equals(testMsg));
+    });
   });
 }
+
