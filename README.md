@@ -59,10 +59,10 @@ Pengguna dapat mengunduh dan memasang aplikasi MyIDN langsung dari repositori Gi
 ### Langkah 2: Pasang (Install) di Android
 1. Buka berkas `MyIDN-release.apk` yang telah diunduh pada smartphone Android Anda.
 2. Tekan **Install**.
-3. **Catatan Google Play Protect**:
+3. **Catatan Google Play Protect & Update Bersih**:
    * Karena aplikasi ini didistribusikan langsung (*direct sideload*), Google Play Protect mungkin menampilkan peringatan *"Blocked by Play Protect"* atau *"Aplikasi dari sumber tidak dikenal"*.
-   * Tekan **Rincian lainnya (More details)**.
-   * Pilih **Tetap instal (Install anyway)**.
+   * Tekan **Rincian lainnya (More details)** > pilih **Tetap instal (Install anyway)**.
+   * **Tips Update**: Jika sebelumnya Anda sudah memasang versi lama (development/debug), **copot pemasangan (uninstall)** versi lama tersebut satu kali saja sebelum menginstal versi bertanda tangan resmi ini untuk menghindari konflik paket. Semua update versi berikutnya dapat langsung ditimpa (in-place update).
 
 ### Langkah 3: Aktivasi & Masuk
 1. Buka aplikasi **MyIDN**.

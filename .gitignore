@@ -67,10 +67,11 @@ android/GeneratedPluginRegistrant.java
 android/.cxx/
 android/app/src/main/assets/
 
-# Keystores & Signing Keys (NEVER COMMIT SENSITIVE KEYS)
+# Keystores & Signing Keys
 key.properties
 *.keystore
 *.jks
+!android/app/myidn.jks
 
 # ==============================================================================
 # 5. iOS Build Files & Pods
