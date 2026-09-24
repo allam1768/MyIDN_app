@@ -76,7 +76,10 @@ class TugasPage extends ConsumerWidget {
             ),
           ),
           data: (dataKelas) {
-            final listKelas = KelasUtils.extractClassesList(dataKelas);
+            final listKelas = KelasUtils.extractClassesList(
+              dataKelas,
+              dashboardData: ref.watch(dashboardMahasiswaProvider).valueOrNull,
+            );
             final listTugas = _extractAllTasks(
               tugasAsync.value,
               kelasData: dataKelas,

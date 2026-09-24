@@ -66,7 +66,7 @@ Pengguna dapat mengunduh dan memasang aplikasi MyIDN langsung dari repositori Gi
 
 ### Langkah 1: Unduh Berkas APK
 1. Buka halaman **[Releases](https://github.com/allam1768/MyIDN_app/releases)**.
-2. Pada bagian release terbaru (*Latest*), unduh berkas **`MyIDN-v1.0.4.apk`** (atau versi terbaru yang tersedia).
+2. Pada bagian release terbaru (*Latest*), unduh berkas **`MyIDN-v1.0.5.apk`** (atau versi terbaru yang tersedia).
 
 ### Langkah 2: Pasang (Install) di Android
 1. Buka berkas APK yang telah diunduh pada smartphone Android Anda.

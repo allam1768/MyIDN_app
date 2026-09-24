@@ -1,8 +1,45 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 /// Utilitas pemrosesan jadwal dan presentasi kelas
 class KelasUtils {
   KelasUtils._();
+
+  static const String _keyCachedSchedule = 'cached_schedule_today';
+  static const String _keyCachedScheduleDate = 'cached_schedule_date';
+
+  /// Menyimpan snapshot jadwal kelas hari ini ke SharedPreferences (Offline & Morning Fallback)
+  static Future<void> cacheScheduleToday(List<dynamic> classes) async {
+    if (classes.isEmpty) return;
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final now = DateTime.now();
+      final dateKey =
+          '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
+      await prefs.setString(_keyCachedScheduleDate, dateKey);
+      await prefs.setString(_keyCachedSchedule, jsonEncode(classes));
+    } catch (_) {}
+  }
+
+  /// Mengambil snapshot jadwal kelas tersimpan jika tanggal hari ini cocok
+  static Future<List<dynamic>> getCachedScheduleToday() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final now = DateTime.now();
+      final dateKey =
+          '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
+      final cachedDate = prefs.getString(_keyCachedScheduleDate);
+      if (cachedDate == dateKey) {
+        final rawJson = prefs.getString(_keyCachedSchedule);
+        if (rawJson != null && rawJson.isNotEmpty) {
+          final decoded = jsonDecode(rawJson);
+          if (decoded is List) return decoded;
+        }
+      }
+    } catch (_) {}
+    return [];
+  }
 
   /// Konversi string waktu "HH:mm" menjadi total menit dari jam 00:00
   static int? parseMinutes(String timeStr) {
@@ -20,28 +57,87 @@ class KelasUtils {
     return null;
   }
 
-  /// Ekstraksi dan pengurutan daftar kelas harian berdasarkan jam mulai
-  static List<dynamic> extractClassesList(dynamic kelasData) {
-    if (kelasData == null) return [];
+  /// Ekstraksi list kelas dari satu objek sumber data LMS (Inertia payload)
+  static List<dynamic> _extractFromSingleSource(dynamic source) {
+    if (source == null) return [];
+    if (source is List) return List.from(source);
 
-    List<dynamic> listKelas = [];
-    if (kelasData is Map && kelasData['props'] is Map) {
-      final props = kelasData['props'];
-      dynamic raw =
-          props['kelas']?['data'] ??
-          props['kelas_harian'] ??
-          props['kelases'] ??
-          props['kelas'];
-      if (raw is Map && raw['data'] is List) {
-        raw = raw['data'];
+    if (source is Map) {
+      final Map root = (source['props'] is Map) ? source['props'] : source;
+
+      const candidateKeys = [
+        'kelas',
+        'kelas_harian',
+        'kelases',
+        'kelas_list',
+        'jadwal',
+        'jadwals',
+        'jadwal_harian',
+        'jadwal_kuliah',
+        'jadwal_hari_ini',
+        'classes',
+        'today_classes',
+        'data',
+      ];
+
+      for (final key in candidateKeys) {
+        final val = root[key];
+        if (val is List && val.isNotEmpty) {
+          return List.from(val);
+        } else if (val is Map) {
+          if (val['data'] is List && (val['data'] as List).isNotEmpty) {
+            return List.from(val['data']);
+          }
+          if (val['kelas'] is List && (val['kelas'] as List).isNotEmpty) {
+            return List.from(val['kelas']);
+          }
+        }
       }
-      if (raw is List) {
-        listKelas = List.from(raw);
+    }
+    return [];
+  }
+
+  /// Ekstraksi dan pengurutan daftar kelas harian berdasarkan jam mulai.
+  /// Mendukung multi-source fallback: jika kelasData kosong di pagi hari sebelum presensi dibuka,
+  /// fungsi akan otomatis mengambil data jadwal dari dashboardData.
+  static List<dynamic> extractClassesList(
+    dynamic kelasData, {
+    dynamic dashboardData,
+  }) {
+    List<dynamic> listKelas = _extractFromSingleSource(kelasData);
+
+    // Fallback: Jika kelasData masih kosong di pagi hari, coba ekstrak dari dashboardData
+    if (listKelas.isEmpty && dashboardData != null) {
+      listKelas = _extractFromSingleSource(dashboardData);
+    }
+
+    // Normalisasi dan deduplikasi item kelas
+    final Set<String> seenCodes = {};
+    final List<dynamic> uniqueClasses = [];
+
+    for (final item in listKelas) {
+      if (item is! Map) continue;
+      final code = (item['kode_kelas_harian'] ??
+              item['kode_kelas'] ??
+              item['id'] ??
+              item['nama_kelas'] ??
+              item['matakuliah'] ??
+              '')
+          .toString()
+          .trim();
+
+      if (code.isNotEmpty) {
+        if (!seenCodes.contains(code)) {
+          seenCodes.add(code);
+          uniqueClasses.add(item);
+        }
+      } else {
+        uniqueClasses.add(item);
       }
     }
 
     // Urutkan jadwal: paling pagi di atas, paling sore di bawah
-    listKelas.sort((a, b) {
+    uniqueClasses.sort((a, b) {
       final aMap = a is Map ? a : {};
       final bMap = b is Map ? b : {};
       final aStart =
@@ -51,7 +147,7 @@ class KelasUtils {
       return aStart.compareTo(bStart);
     });
 
-    return listKelas;
+    return uniqueClasses;
   }
 
   /// Ekstraksi nama dosen dari berbagai kemungkinan format payload LMS

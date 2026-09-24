@@ -256,7 +256,10 @@ class DashboardUtils {
     }
 
     // 2. Deteksi cerdas Program Studi, Semester, dan Kelas dari jadwal kelas
-    final listKelas = KelasUtils.extractClassesList(kelasData);
+    final listKelas = KelasUtils.extractClassesList(
+      kelasData,
+      dashboardData: dashboardData,
+    );
     String detectedProdi = '';
     String detectedSemester = '';
     String detectedKelas = '';

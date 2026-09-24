@@ -53,8 +53,30 @@ class DashboardPage extends ConsumerWidget {
     // Sinkronkan notifikasi jadwal kelas hari ini secara otomatis
     ref.listen(kelasHarianProvider, (prev, next) {
       next.whenData((data) {
-        final classes = KelasUtils.extractClassesList(data);
-        NotificationService.scheduleClassesForToday(classes);
+        final dashboardData = ref.read(dashboardMahasiswaProvider).valueOrNull;
+        final classes = KelasUtils.extractClassesList(
+          data,
+          dashboardData: dashboardData,
+        );
+        if (classes.isNotEmpty) {
+          KelasUtils.cacheScheduleToday(classes);
+          NotificationService.scheduleClassesForToday(classes);
+        }
+      });
+    });
+
+    // Sinkronkan notifikasi jika jadwal kelas didapat dari dashboardMahasiswa
+    ref.listen(dashboardMahasiswaProvider, (prev, next) {
+      next.whenData((data) {
+        final kelasData = ref.read(kelasHarianProvider).valueOrNull;
+        final classes = KelasUtils.extractClassesList(
+          kelasData,
+          dashboardData: data,
+        );
+        if (classes.isNotEmpty) {
+          KelasUtils.cacheScheduleToday(classes);
+          NotificationService.scheduleClassesForToday(classes);
+        }
       });
     });
 
@@ -97,23 +119,35 @@ class DashboardPage extends ConsumerWidget {
     final tugasAsync = ref.watch(tugasHarianProvider);
     final ibadahAsync = ref.watch(ibadahHarianProvider);
     final poinKebaikanAsync = ref.watch(poinKebaikanStatusProvider);
+    final cachedScheduleAsync = ref.watch(cachedScheduleProvider);
 
     final dashboardData = dashboardAsync.valueOrNull;
     final kelasData = kelasAsync.valueOrNull;
     final tugasData = tugasAsync.valueOrNull;
     final ibadahData = ibadahAsync.valueOrNull;
+    final cachedSchedule = cachedScheduleAsync.valueOrNull ?? [];
 
     // Status penyelesaian ibadah & poin kebaikan hari ini (DRY via DashboardHelpers)
     final bool isIbadahDone = DashboardHelpers.isIbadahDone(ibadahData);
     final bool isKebaikanDone = poinKebaikanAsync.valueOrNull ?? false;
 
-    // Ekstraksi data
+    // Ekstraksi data dengan multi-source & cache fallback (Solusi agar jadwal langsung tampil di pagi hari)
     final userName = DashboardUtils.extractUserName(dashboardData, kelasData);
     final userProfile = DashboardUtils.extractUserProfile(
       dashboardData,
       kelasData,
     );
-    final listKelas = KelasUtils.extractClassesList(kelasData);
+
+    var listKelas = KelasUtils.extractClassesList(
+      kelasData,
+      dashboardData: dashboardData,
+    );
+    if (listKelas.isEmpty && cachedSchedule.isNotEmpty) {
+      listKelas = cachedSchedule;
+    } else if (listKelas.isNotEmpty) {
+      KelasUtils.cacheScheduleToday(listKelas);
+    }
+
     final listTugas = DashboardUtils.extractAllTasks(
       tugasData,
       dashboardData: dashboardData,

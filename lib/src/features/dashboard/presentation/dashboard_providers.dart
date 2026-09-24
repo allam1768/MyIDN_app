@@ -32,7 +32,10 @@ final tugasHarianProvider = FutureProvider.autoDispose<dynamic>((ref) async {
   // Tambahkan juga kelas aktif hari ini dari kelasHarian jika belum ada di daftar
   final todayKelasData = ref.read(kelasHarianProvider).valueOrNull;
   if (todayKelasData != null) {
-    final todayClasses = KelasUtils.extractClassesList(todayKelasData);
+    final todayClasses = KelasUtils.extractClassesList(
+      todayKelasData,
+      dashboardData: ref.read(dashboardMahasiswaProvider).valueOrNull,
+    );
     for (final tc in todayClasses) {
       if (tc is Map) {
         final tKode = tc['kode_kelas_harian']?.toString() ?? '';
@@ -151,3 +154,9 @@ final poinKebaikanStatusProvider = FutureProvider.autoDispose<bool>((
 ) async {
   return PoinKebaikanConfig.isDoneToday();
 });
+
+/// Provider snapshot jadwal kelas tersimpan (offline & morning fallback)
+final cachedScheduleProvider =
+    FutureProvider.autoDispose<List<dynamic>>((ref) async {
+      return KelasUtils.getCachedScheduleToday();
+    });

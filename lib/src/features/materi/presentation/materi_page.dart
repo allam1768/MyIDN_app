@@ -70,7 +70,10 @@ class MateriPage extends ConsumerWidget {
             ),
           ),
           data: (dataKelas) {
-            final listKelas = KelasUtils.extractClassesList(dataKelas);
+            final listKelas = KelasUtils.extractClassesList(
+              dataKelas,
+              dashboardData: ref.watch(dashboardMahasiswaProvider).valueOrNull,
+            );
 
             // Ekstraksi materi umum jika ada
             List<dynamic> listMateriUmum = [];

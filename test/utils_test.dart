@@ -71,6 +71,33 @@ void main() {
       expect(KelasUtils.extractClassesList({'data': 'string'}), isEmpty);
     });
 
+    test(
+      'extractClassesList falls back to dashboardData when kelasData is empty (morning fallback)',
+      () {
+        final emptyKelasData = {
+          'props': {
+            'kelas': {'data': []},
+          },
+        };
+        final mockDashboardData = {
+          'props': {
+            'jadwal': [
+              {'nama_kelas': 'Pemrograman Mobile', 'jam_mulai': '08:00'},
+              {'nama_kelas': 'Jaringan Komputer', 'jam_mulai': '13:00'},
+            ],
+          },
+        };
+
+        final list = KelasUtils.extractClassesList(
+          emptyKelasData,
+          dashboardData: mockDashboardData,
+        );
+        expect(list.length, 2);
+        expect(list.first['nama_kelas'], 'Pemrograman Mobile');
+        expect(list.last['nama_kelas'], 'Jaringan Komputer');
+      },
+    );
+
     test('extractDosenName extracts name safely', () {
       expect(KelasUtils.extractDosenName(null, 'Pak Ustadz'), 'Pak Ustadz');
       expect(KelasUtils.extractDosenName({'name': 'Dosen A'}, null), 'Dosen A');

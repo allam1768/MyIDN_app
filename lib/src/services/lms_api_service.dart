@@ -7,6 +7,7 @@ import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../constants/lms_endpoints.dart';
 
@@ -21,6 +22,7 @@ class LmsApiService {
   late CookieJar _cookieJar;
   bool _isInitialized = false;
   String? _inertiaVersion;
+  Future<bool>? _ongoingReauth;
 
   LmsApiService() {
     _dio = Dio(
@@ -308,16 +310,88 @@ class LmsApiService {
     return rawData;
   }
 
+  /// Mencoba login ulang secara otomatis menggunakan kredensial tersimpan saat sesi expired
+  Future<bool> _tryAutoRelogin() {
+    if (_ongoingReauth != null) return _ongoingReauth!;
+    _ongoingReauth = _performAutoRelogin().whenComplete(() {
+      _ongoingReauth = null;
+    });
+    return _ongoingReauth!;
+  }
+
+  Future<bool> _performAutoRelogin() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final savedNim = prefs.getString('saved_nim') ?? '';
+      final savedPassword = prefs.getString('saved_password') ?? '';
+      if (savedNim.isNotEmpty && savedPassword.isNotEmpty) {
+        debugPrint('[LmsApiService] Sesi expired: Melakukan auto-relogin untuk $savedNim...');
+        return await login(savedNim, savedPassword);
+      }
+    } catch (e) {
+      debugPrint('[LmsApiService] Gagal auto-relogin: $e');
+    }
+    return false;
+  }
+
   Future<dynamic> _safeInertiaGet(String path, String label) async {
     await init();
-    final response = await _dio.get(
-      path,
-      options: Options(
-        headers: _getInertiaHeaders(),
-        followRedirects: true,
-        maxRedirects: 5,
-      ),
-    );
+    Response response;
+    try {
+      response = await _dio.get(
+        path,
+        options: Options(
+          headers: _getInertiaHeaders(),
+          followRedirects: true,
+          maxRedirects: 5,
+        ),
+      );
+    } on DioException catch (e) {
+      // Tangani status session expired / CSRF mismatch (401 / 419)
+      if (e.response?.statusCode == 401 || e.response?.statusCode == 419) {
+        debugPrint('[$label] DioException ${e.response?.statusCode}. Mencoba auto-relogin...');
+        final reauth = await _tryAutoRelogin();
+        if (reauth) {
+          response = await _dio.get(
+            path,
+            options: Options(
+              headers: _getInertiaHeaders(),
+              followRedirects: true,
+              maxRedirects: 5,
+            ),
+          );
+        } else {
+          rethrow;
+        }
+      } else {
+        rethrow;
+      }
+    }
+
+    // Deteksi jika server mengembalikan halaman login form HTML padahal status 200/302
+    final bodyStr = response.data?.toString() ?? '';
+    final bool isSessionStale = response.statusCode == 401 ||
+        response.statusCode == 419 ||
+        (response.statusCode == 302 &&
+            ((response.headers.value('location') ?? '').contains('signin') ||
+                (response.headers.value('location') ?? '').contains('login'))) ||
+        (bodyStr.contains('name="username"') &&
+            bodyStr.contains('name="password"'));
+
+    if (isSessionStale) {
+      debugPrint('[$label] Halaman login terdeteksi pada response. Melakukan auto-relogin...');
+      final reauth = await _tryAutoRelogin();
+      if (reauth) {
+        response = await _dio.get(
+          path,
+          options: Options(
+            headers: _getInertiaHeaders(),
+            followRedirects: true,
+            maxRedirects: 5,
+          ),
+        );
+      }
+    }
 
     if (response.statusCode == 409) {
       final htmlRes = await _dio.get(
