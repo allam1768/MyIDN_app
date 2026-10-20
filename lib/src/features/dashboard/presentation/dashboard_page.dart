@@ -35,6 +35,8 @@ class DashboardPage extends ConsumerWidget {
     ref.invalidate(ibadahHarianProvider);
     ref.invalidate(poinKebaikanStatusProvider);
     ref.invalidate(appUpdateInfoProvider);
+    ref.invalidate(absensiHarianProvider);
+    ref.invalidate(cachedScheduleProvider);
   }
 
   static Future<void> _syncNightlyReminder(WidgetRef ref) async {
@@ -138,9 +140,13 @@ class DashboardPage extends ConsumerWidget {
       kelasData,
     );
 
+    final absensiAsync = ref.watch(absensiHarianProvider);
+    final absensiData = absensiAsync.valueOrNull;
+
     var listKelas = KelasUtils.extractClassesList(
       kelasData,
       dashboardData: dashboardData,
+      absensiData: absensiData,
     );
     if (listKelas.isEmpty && cachedSchedule.isNotEmpty) {
       listKelas = cachedSchedule;

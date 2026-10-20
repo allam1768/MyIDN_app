@@ -9,8 +9,6 @@ import '../../dashboard/presentation/dashboard_providers.dart';
 import '../../dashboard/presentation/dashboard_utils.dart';
 import '../domain/models/surat_izin_model.dart';
 import 'surat_izin_preview_page.dart';
-import '../../license/application/license_service.dart';
-import '../../license/presentation/activation_modal.dart';
 
 /// Halaman Formulir Pengajuan Surat Izin Tidak Masuk Kelas Politeknik IDN
 class SuratIzinFormPage extends ConsumerStatefulWidget {
@@ -199,17 +197,6 @@ class _SuratIzinFormPageState extends ConsumerState<SuratIzinFormPage> {
       tandaTanganBytes: signatureBytes,
       suratDokterBytes: _suratDokterBytes,
     );
-
-    if (!mounted) return;
-
-    // Gerbang Lisensi Pro untuk Fitur Pembuatan Surat Izin
-    final isPro = ref.read(licenseControllerProvider).valueOrNull ?? false;
-    if (!isPro) {
-      final activated = await ActivationModal.show(context);
-      if (activated != true) {
-        return; // Batal jika belum aktivasi lisensi
-      }
-    }
 
     if (!mounted) return;
     Navigator.push(

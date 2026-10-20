@@ -4,10 +4,119 @@ import '../../../services/lms_api_service.dart';
 import '../../poin_kebaikan/data/poin_kebaikan_data.dart';
 import 'kelas_utils.dart';
 
-/// Provider data kelas harian mahasiswa (Auto-cached & deklaratif)
-final kelasHarianProvider = FutureProvider.autoDispose<dynamic>((ref) {
+/// Provider data kelas harian mahasiswa (Auto-cached & deklaratif, dengan Morning Fallback Resolver)
+final kelasHarianProvider = FutureProvider.autoDispose<dynamic>((ref) async {
   final api = ref.watch(lmsApiServiceProvider);
-  return api.getKelasHarian();
+
+  // 1. Coba ambil data kelas harian langsung dari server
+  dynamic kelasData;
+  try {
+    kelasData = await api.getKelasHarian();
+  } catch (e) {
+    debugPrint('[kelasHarianProvider] Gagal getKelasHarian: $e');
+  }
+
+  // Cek apakah data dari kelas_harian sudah berisi kelas
+  final extracted = KelasUtils.extractClassesList(kelasData);
+  if (extracted.isNotEmpty) {
+    // Fast path: server sudah memiliki daftar kelas aktif hari ini
+    await KelasUtils.cacheScheduleToday(extracted);
+    return kelasData;
+  }
+
+  // 2. MORNING FALLBACK RESOLVER:
+  // Di pagi hari sebelum mahasiswa presensi kelas pertama, endpoint kelas_harian
+  // seringkali belum terisi ([]). Kita selesaikan dengan mengambil daftar kelas terdaftar
+  // dari absensi_harian lalu mencocokkan jadwal hari ini secara paralel.
+  debugPrint(
+    '[kelasHarianProvider] Kelas harian kosong di pagi hari. Memulai Morning Fallback Resolver...',
+  );
+
+  try {
+    // Ambil data absensi harian (daftar kelas semester aktif)
+    dynamic absensiData;
+    try {
+      absensiData = await api.getAbsensiHarian();
+    } catch (e) {
+      debugPrint('[kelasHarianProvider] Gagal getAbsensiHarian: $e');
+    }
+
+    final List<dynamic> enrolledClasses = [];
+    if (absensiData is Map && absensiData['props'] is Map) {
+      final props = absensiData['props'];
+      final raw = props['kelas']?['data'] ??
+          props['kelas'] ??
+          props['kelases'] ??
+          props['data'];
+      if (raw is List) {
+        enrolledClasses.addAll(raw);
+      }
+    }
+
+    // Jika absensi_harian kosong, coba ambil dari tugas_harian
+    if (enrolledClasses.isEmpty) {
+      try {
+        final tugasData = await api.getTugasHarian();
+        if (tugasData is Map && tugasData['props'] is Map) {
+          final props = tugasData['props'];
+          final raw = props['kelas']?['data'] ??
+              props['kelas'] ??
+              props['kelases'] ??
+              props['data'];
+          if (raw is List) enrolledClasses.addAll(raw);
+        }
+      } catch (_) {}
+    }
+
+    if (enrolledClasses.isNotEmpty) {
+      final resolvedTodayClasses =
+          await KelasUtils.resolveTodayClassesFromAbsensi(
+        enrolledClasses: enrolledClasses,
+        fetchJadwalAbsensi: (kode) => api.getListJadwalAbsensi(kode),
+      );
+
+      if (resolvedTodayClasses.isNotEmpty) {
+        debugPrint(
+          '[kelasHarianProvider] Morning Fallback berhasil memuat ${resolvedTodayClasses.length} kelas hari ini!',
+        );
+        await KelasUtils.cacheScheduleToday(resolvedTodayClasses);
+
+        final Map<String, dynamic> resultPayload = {
+          'component': 'Mhs/Harian/KelasHarian/Index',
+          'props': {
+            'kelas': {
+              'data': resolvedTodayClasses,
+            },
+            if (kelasData is Map && kelasData['props'] is Map)
+              ...Map<String, dynamic>.from(kelasData['props'] as Map),
+          },
+        };
+        return resultPayload;
+      }
+    }
+  } catch (e) {
+    debugPrint('[kelasHarianProvider] Error Morning Fallback Resolver: $e');
+  }
+
+  // 3. Fallback Offline Cache jika network gagal / belum ada kelas
+  final cached = await KelasUtils.getCachedScheduleToday();
+  if (cached.isNotEmpty) {
+    debugPrint(
+      '[kelasHarianProvider] Menggunakan cached schedule (${cached.length} kelas)',
+    );
+    return {
+      'component': 'Mhs/Harian/KelasHarian/Index',
+      'props': {
+        'kelas': {
+          'data': cached,
+        },
+        if (kelasData is Map && kelasData['props'] is Map)
+          ...Map<String, dynamic>.from(kelasData['props'] as Map),
+      },
+    };
+  }
+
+  return kelasData;
 });
 
 /// Provider data tugas harian mahasiswa (Lengkap dengan auto-fetch tugas per kelas)

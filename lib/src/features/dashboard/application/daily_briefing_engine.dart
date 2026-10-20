@@ -163,6 +163,7 @@ class DailyBriefingEngine {
                       DetailAbsensiPage(kodeKelasHarian: kode, namaKelas: nama),
                 ),
               );
+              ref.invalidate(kelasHarianProvider);
             }
           },
         ),

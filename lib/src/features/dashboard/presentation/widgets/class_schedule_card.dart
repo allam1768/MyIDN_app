@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../../../jadwal_absensi/presentation/detail_absensi_page.dart';
+import '../dashboard_providers.dart';
 import '../kelas_utils.dart';
 
-class ClassScheduleCard extends StatelessWidget {
+class ClassScheduleCard extends ConsumerWidget {
   final String namaKelas;
   final String jamMulai;
   final String jamSelesai;
@@ -23,7 +25,7 @@ class ClassScheduleCard extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final iconInfo = KelasUtils.getMapelIcon(namaKelas);
     final startMin = KelasUtils.parseMinutes(jamMulai);
     final endMin = KelasUtils.parseMinutes(jamSelesai);
@@ -86,8 +88,8 @@ class ClassScheduleCard extends StatelessWidget {
         child: InkWell(
           borderRadius: BorderRadius.circular(14.r),
           onTap: kodeKelas.isNotEmpty
-              ? () {
-                  Navigator.push(
+              ? () async {
+                  await Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (_) => DetailAbsensiPage(
@@ -96,6 +98,7 @@ class ClassScheduleCard extends StatelessWidget {
                       ),
                     ),
                   );
+                  ref.invalidate(kelasHarianProvider);
                 }
               : null,
           child: Padding(

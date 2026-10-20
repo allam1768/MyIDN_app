@@ -67,6 +67,7 @@ class _DetailAbsensiPageState extends ConsumerState<DetailAbsensiPage> {
       _todayKodeController.clear();
       // Auto-refresh jadwal via Riverpod invalidation!
       ref.invalidate(listJadwalAbsensiProvider(_providerParam));
+      ref.invalidate(kelasHarianProvider);
     } else {
       final errorMsg =
           ref.read(presensiSubmitControllerProvider).errorMessage ??

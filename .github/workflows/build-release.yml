@@ -60,25 +60,21 @@ jobs:
           body: |
             ## 📱 MyIDN App Release ${{ github.ref_name }}
             
-            > [!IMPORTANT]
-            > 💳 **Informasi Lisensi Berbayar (In-App Activation):**
-            > Aplikasi MyIDN merupakan aplikasi berbayar dengan lisensi permanen (*Lifetime License* seumur hidup).
-            > - **Harga Lisensi**: **Rp 25.000 (Sekali bayar / Lifetime)**
-            > - **Metode Pembayaran**: Scan barcode **QRIS** langsung di halaman aktivasi aplikasi (mendukung GoPay, OVO, DANA, ShopeePay, BCA, Mandiri, BRI, Bank Jago, atau e-wallet/bank apa saja).
-            > - **Cara Aktivasi**: Scan QRIS -> Transfer Rp 25.000 (Pas) -> Kirim Kode Perangkat & Bukti Transfer ke WhatsApp Admin -> Dapatkan Serial Key Resmi untuk aktivasi seumur hidup.
+            Unduh berkas APK versi terbaru di bawah ini dan pasang langsung ke perangkat Android Anda.
             
-            Unduh berkas APK siap pakai di bawah ini dan pasang langsung ke perangkat Android Anda.
+            ### ✨ Apa yang Baru di Versi ${{ github.ref_name }}:
+            - 🔄 **Penyempurnaan Jadwal Kelas Pagi:** Sinkronisasi multi-sumber cerdas (LMS Dashboard + Fallback Jadwal Absensi + Offline Cache) agar jadwal selalu tampil akurat.
+            - 🚀 **Performa & Akses Lebih Cepat:** Peningkatan kecepatan startup splash screen dan navigasi dashboard tanpa hambatan.
+            - 📄 **Optimalisasi Formulir & Tanda Tangan:** Stabilitas pembuatan Surat Izin tidak masuk kelas dan ekspor PDF.
+            - 🛡️ **Peningkatan Stabilitas Sesi:** Deteksi token expired dan auto-reconnect yang lebih handal.
             
             ### 📥 Download
             * **[MyIDN-${{ github.ref_name }}.apk](https://github.com/allam1768/MyIDN_app/releases/download/${{ github.ref_name }}/MyIDN-${{ github.ref_name }}.apk)**
             * [MyIDN-release.apk](https://github.com/allam1768/MyIDN_app/releases/download/${{ github.ref_name }}/MyIDN-release.apk)
             
-            ### 🚀 Panduan Instalasi & Aktivasi
+            ### 🚀 Panduan Instalasi
             1. Unduh berkas **MyIDN-${{ github.ref_name }}.apk**.
-            2. Buka berkas dan tekan **Install** (Jika muncul notifikasi Play Protect, pilih *More details / Rincian lainnya* -> *Install anyway / Tetap instal*).
-            3. Buka aplikasi **MyIDN**.
-            4. Di halaman **Aktivasi Lisensi**, scan kode QRIS dan lakukan transfer **Rp 25.000**.
-            5. Tekan tombol **Kirim Kode & Bukti Bayar ke WhatsApp** untuk mengirim Kode Perangkat beserta foto bukti transfer ke Admin.
-            6. Tempelkan Serial Key yang diterima dari Admin dan tekan **Aktivasi Sekarang**. Aplikasi akan aktif permanen seumur hidup!
+            2. Buka berkas dan pilih **Install** (Jika muncul peringatan Play Protect, pilih *Rincian lainnya / More details* -> *Tetap instal / Install anyway*).
+            3. Buka aplikasi **MyIDN** dan login dengan akun LMS IDN Anda.
 
 

@@ -48,23 +48,9 @@ class LicenseService {
   }
 
   /// Memeriksa apakah perangkat saat ini memiliki lisensi Pro yang valid.
+  /// Aplikasi saat ini sepenuhnya gratis (Full Access) tanpa memerlukan aktivasi kunci.
   Future<bool> isLicenseActive() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final savedKey = prefs.getString(prefLicenseKey);
-      if (savedKey == null || savedKey.isEmpty) {
-        return false;
-      }
-
-      final currentDeviceId = await DeviceIdentityService.getDeviceId();
-      return await verifySignature(
-        deviceId: currentDeviceId,
-        serialKey: savedKey,
-      );
-    } catch (e) {
-      debugPrint('isLicenseActive error: $e');
-      return false;
-    }
+    return true;
   }
 
   /// Mengaktivasi aplikasi menggunakan Serial Key baru.
@@ -120,34 +106,22 @@ final licenseServiceProvider = Provider<LicenseService>((ref) {
 class LicenseStateNotifier extends StateNotifier<AsyncValue<bool>> {
   final LicenseService _service;
 
-  LicenseStateNotifier(this._service) : super(const AsyncValue.loading()) {
+  LicenseStateNotifier(this._service) : super(const AsyncValue.data(true)) {
     checkStatus();
   }
 
   Future<void> checkStatus() async {
-    try {
-      final isActive = await _service.isLicenseActive();
-      state = AsyncValue.data(isActive);
-    } catch (e, st) {
-      state = AsyncValue.error(e, st);
-    }
+    state = const AsyncValue.data(true);
   }
 
   Future<bool> activate(String serialKey) async {
-    state = const AsyncValue.loading();
-    try {
-      final success = await _service.activate(serialKey);
-      state = AsyncValue.data(success);
-      return success;
-    } catch (e, st) {
-      state = AsyncValue.error(e, st);
-      return false;
-    }
+    state = const AsyncValue.data(true);
+    return true;
   }
 
   Future<void> revoke() async {
     await _service.revokeLicense();
-    state = const AsyncValue.data(false);
+    state = const AsyncValue.data(true);
   }
 }
 

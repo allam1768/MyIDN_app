@@ -53,6 +53,11 @@ void main() {
       expect(isValid, isTrue);
     });
 
+    test('isLicenseActive returns true by default without requiring activation key (Free Mode)', () async {
+      final isActive = await licenseService.isLicenseActive();
+      expect(isActive, isTrue);
+    });
+
     test(
       'Anti-Piracy Check: Same serial key FAILS on a different device',
       () async {

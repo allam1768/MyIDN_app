@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:reminder/src/utils/date_utils.dart';
 import 'package:reminder/src/features/dashboard/presentation/dashboard_utils.dart';
 import 'package:reminder/src/features/dashboard/presentation/kelas_utils.dart';
@@ -95,6 +96,104 @@ void main() {
         expect(list.length, 2);
         expect(list.first['nama_kelas'], 'Pemrograman Mobile');
         expect(list.last['nama_kelas'], 'Jaringan Komputer');
+      },
+    );
+
+    test(
+      'extractClassesList falls back to absensiData when kelasData and dashboardData are empty',
+      () {
+        final emptyKelas = {
+          'props': {
+            'kelas': {'data': []},
+          },
+        };
+        final absensiData = {
+          'props': {
+            'kelas': [
+              {'nama_kelas': 'English for IT', 'jam_mulai': '09:00'},
+            ],
+          },
+        };
+
+        final list = KelasUtils.extractClassesList(
+          emptyKelas,
+          dashboardData: null,
+          absensiData: absensiData,
+        );
+        expect(list.length, 1);
+        expect(list.first['nama_kelas'], 'English for IT');
+      },
+    );
+
+    test(
+      'resolveTodayClassesFromAbsensi filters and constructs today classes accurately',
+      () async {
+        final mockEnrolled = [
+          {'kode_kelas_harian': 'KH101', 'nama_kelas': 'Pemrograman Mobile'},
+          {'kode_kelas_harian': 'KH102', 'nama_kelas': 'Basis Data'},
+        ];
+
+        final today = DateTime(2026, 10, 5);
+
+        final result = await KelasUtils.resolveTodayClassesFromAbsensi(
+          enrolledClasses: mockEnrolled,
+          targetDate: today,
+          fetchJadwalAbsensi: (kode) async {
+            if (kode == 'KH101') {
+              return {
+                'props': {
+                  'jadwal': [
+                    {
+                      'id': 11,
+                      'tanggal': '2026-10-05',
+                      'jam_mulai': '08:00',
+                      'jam_selesai': '10:00',
+                      'kode_unik': 'ABC1',
+                    }
+                  ],
+                  'kelasHarian': {'nama_dosen': 'Ustadz Fulan'},
+                }
+              };
+            }
+            if (kode == 'KH102') {
+              return {
+                'props': {
+                  'jadwal': [
+                    {
+                      'id': 12,
+                      'tanggal': '2026-10-06', // Besok, bukan hari ini!
+                      'jam_mulai': '10:00',
+                    }
+                  ],
+                }
+              };
+            }
+            return null;
+          },
+        );
+
+        expect(result.length, 1);
+        expect(result.first['kode_kelas_harian'], 'KH101');
+        expect(result.first['nama_kelas'], 'Pemrograman Mobile');
+        expect(result.first['jam_mulai'], '08:00');
+        expect(result.first['jadwal_id'], 11);
+        expect(result.first['nama_dosen'], 'Ustadz Fulan');
+      },
+    );
+
+    test(
+      'cacheScheduleToday and getCachedScheduleToday handles weekday fallback',
+      () async {
+        SharedPreferences.setMockInitialValues({});
+        final mockClasses = [
+          {'nama_kelas': 'TRPL Kelas A', 'jam_mulai': '08:00'},
+        ];
+
+        await KelasUtils.cacheScheduleToday(mockClasses);
+
+        final cached = await KelasUtils.getCachedScheduleToday();
+        expect(cached.length, 1);
+        expect(cached.first['nama_kelas'], 'TRPL Kelas A');
       },
     );
 

@@ -5,9 +5,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../../../services/lms_api_service.dart';
 import '../../auth/presentation/login_page.dart';
 import '../../dashboard/presentation/dashboard_page.dart';
-import '../../license/application/license_service.dart';
-import '../../license/presentation/activation_page.dart';
-
 class SplashPage extends ConsumerStatefulWidget {
   const SplashPage({super.key});
 
@@ -27,49 +24,30 @@ class _SplashPageState extends ConsumerState<SplashPage> {
   Future<void> _checkSessionAndNavigate() async {
     final delayFuture = Future.delayed(const Duration(milliseconds: 800));
 
-    // 1. Cek Gerbang Lisensi Hardware (100% Full-App Gatekeeper) dengan timeout
-    bool isLicensed = false;
-    try {
-      isLicensed = await ref
-          .read(licenseServiceProvider)
-          .isLicenseActive()
-          .timeout(const Duration(seconds: 2), onTimeout: () => false);
-    } catch (e) {
-      debugPrint('[SplashPage] Gagal membaca lisensi: $e');
-      isLicensed = false;
-    }
-
     final apiService = ref.read(lmsApiServiceProvider);
     bool isAuthenticated = false;
 
-    if (isLicensed) {
-      try {
-        final hasSession = await apiService
-            .hasActiveSession()
-            .timeout(const Duration(seconds: 2), onTimeout: () => false);
-        if (hasSession) {
-          isAuthenticated = await apiService
-              .validateSessionWithServer()
-              .timeout(const Duration(seconds: 3), onTimeout: () => false);
-        }
-      } catch (e) {
-        debugPrint('[SplashPage] Gagal memvalidasi sesi aktif: $e');
+    try {
+      final hasSession = await apiService
+          .hasActiveSession()
+          .timeout(const Duration(seconds: 2), onTimeout: () => false);
+      if (hasSession) {
+        isAuthenticated = await apiService
+            .validateSessionWithServer()
+            .timeout(const Duration(seconds: 3), onTimeout: () => false);
       }
+    } catch (e) {
+      debugPrint('[SplashPage] Gagal memvalidasi sesi aktif: $e');
+      isAuthenticated = false;
     }
 
     await delayFuture;
 
     if (!mounted) return;
 
-    // Jika belum aktivasi lisensi hardware, paksa masuk ke halaman aktivasi pertama
-    final Widget targetPage;
-    if (!isLicensed) {
-      targetPage = const ActivationPage();
-    } else if (isAuthenticated) {
-      targetPage = const DashboardPage();
-    } else {
-      targetPage = const LoginPage();
-    }
+    // Aplikasi sepenuhnya gratis: langsung ke Dashboard jika sesi aktif, atau langsung ke LoginPage
+    final Widget targetPage =
+        isAuthenticated ? const DashboardPage() : const LoginPage();
 
     Navigator.of(context).pushReplacement(
       PageRouteBuilder(
