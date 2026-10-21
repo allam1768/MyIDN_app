@@ -17,6 +17,7 @@ class _PoinKebaikanPageState extends State<PoinKebaikanPage> {
   late String _selectedNama;
   String _selectedProdi = 'TRPL (Programmer)';
   final String _selectedAngkatan = PoinKebaikanConfig.defaultAngkatan;
+  DateTime _selectedTanggal = DateTime.now();
   bool _agreedToPromise = true;
 
   final Set<String> _selectedItemIds = {};
@@ -107,12 +108,52 @@ class _PoinKebaikanPageState extends State<PoinKebaikanPage> {
     }
   }
 
+  Future<void> _pickTanggal() async {
+    final now = DateTime.now();
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedTanggal,
+      firstDate: now.subtract(const Duration(days: 30)),
+      lastDate: now.add(const Duration(days: 1)),
+      helpText: 'PILIH TANGGAL KEGIATAN',
+      cancelText: 'BATAL',
+      confirmText: 'PILIH',
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: const ColorScheme.light(
+              primary: Color(0xFFE11D48),
+              onPrimary: Colors.white,
+              onSurface: Color(0xFF111827),
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+
+    if (picked != null && mounted) {
+      setState(() {
+        _selectedTanggal = picked;
+      });
+    }
+  }
+
   Future<void> _openPrefilledForm() async {
+    final formattedDate =
+        PoinKebaikanConfig.formatDateForGoogleForm(_selectedTanggal);
     final queryParams = <String, String>{
       'usp': 'pp_url',
       PoinKebaikanConfig.entryAngkatan: _selectedAngkatan,
       PoinKebaikanConfig.entryProdi: _selectedProdi,
       PoinKebaikanConfig.entryNama: _selectedNama,
+      PoinKebaikanConfig.entryTanggal: formattedDate,
+      '${PoinKebaikanConfig.entryTanggal}_year':
+          _selectedTanggal.year.toString(),
+      '${PoinKebaikanConfig.entryTanggal}_month':
+          _selectedTanggal.month.toString().padLeft(2, '0'),
+      '${PoinKebaikanConfig.entryTanggal}_day':
+          _selectedTanggal.day.toString().padLeft(2, '0'),
       PoinKebaikanConfig.entryJanji: PoinKebaikanConfig.janjiValue,
     };
 
@@ -149,6 +190,7 @@ class _PoinKebaikanPageState extends State<PoinKebaikanPage> {
           _saranController.clear();
           _searchController.clear();
           _searchQuery = '';
+          _selectedTanggal = DateTime.now();
         });
 
         if (selectedCount > 0) {
@@ -409,6 +451,7 @@ class _PoinKebaikanPageState extends State<PoinKebaikanPage> {
       selectedNama: _selectedNama,
       selectedProdi: _selectedProdi,
       selectedAngkatan: _selectedAngkatan,
+      selectedTanggal: _selectedTanggal,
       agreedToPromise: _agreedToPromise,
       onNamaChanged: (val) {
         if (val != null) setState(() => _selectedNama = val);
@@ -416,6 +459,7 @@ class _PoinKebaikanPageState extends State<PoinKebaikanPage> {
       onProdiChanged: (val) {
         if (val != null) setState(() => _selectedProdi = val);
       },
+      onPickTanggal: _pickTanggal,
       onPromiseToggled: () =>
           setState(() => _agreedToPromise = !_agreedToPromise),
     );

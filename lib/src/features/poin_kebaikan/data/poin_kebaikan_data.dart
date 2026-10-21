@@ -39,8 +39,13 @@ class PoinKebaikanConfig {
   static const String entryAngkatan = 'entry.797821628';
   static const String entryProdi = 'entry.1755450003';
   static const String entryNama = 'entry.1060416800';
+  static const String entryTanggal = 'entry.1918732472';
   static const String entryJanji = 'entry.808834917';
   static const String entrySaran = 'entry.267775390';
+
+  static String formatDateForGoogleForm(DateTime date) {
+    return "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
+  }
 
   static const String janjiValue = 'Ya, saya berjanji.';
   static const String defaultAngkatan = 'Angkatan 5 (2026)';

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:reminder/src/utils/date_utils.dart';
 import '../../data/poin_kebaikan_data.dart';
 
 /// Kartu identitas santri & janji kejujuran pengisian form poin kebaikan
@@ -6,9 +7,11 @@ class KebaikanIdentityCard extends StatelessWidget {
   final String selectedNama;
   final String selectedProdi;
   final String selectedAngkatan;
+  final DateTime selectedTanggal;
   final bool agreedToPromise;
   final ValueChanged<String?> onNamaChanged;
   final ValueChanged<String?> onProdiChanged;
+  final VoidCallback onPickTanggal;
   final VoidCallback onPromiseToggled;
 
   const KebaikanIdentityCard({
@@ -16,9 +19,11 @@ class KebaikanIdentityCard extends StatelessWidget {
     required this.selectedNama,
     required this.selectedProdi,
     required this.selectedAngkatan,
+    required this.selectedTanggal,
     required this.agreedToPromise,
     required this.onNamaChanged,
     required this.onProdiChanged,
+    required this.onPickTanggal,
     required this.onPromiseToggled,
   });
 
@@ -189,6 +194,143 @@ class KebaikanIdentityCard extends StatelessWidget {
                 onChanged: onProdiChanged,
               ),
             ),
+          ),
+          const SizedBox(height: 12),
+
+          // Tanggal Kegiatan Yang Dilaporkan
+          Builder(
+            builder: (context) {
+              final now = DateTime.now();
+              final isToday = selectedTanggal.year == now.year &&
+                  selectedTanggal.month == now.month &&
+                  selectedTanggal.day == now.day;
+
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Tanggal Kegiatan Yang Dilaporkan',
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF6B7280),
+                        ),
+                      ),
+                      if (isToday)
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 7,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFDCFCE7),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: const Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.check_circle_outline_rounded,
+                                size: 11,
+                                color: Color(0xFF15803D),
+                              ),
+                              SizedBox(width: 3),
+                              Text(
+                                'Hari Ini',
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF15803D),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: 6),
+                  InkWell(
+                    onTap: onPickTanggal,
+                    borderRadius: BorderRadius.circular(10),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 11,
+                      ),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF9FAFB),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: const Color(0xFFE5E7EB)),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(
+                            Icons.calendar_today_rounded,
+                            size: 18,
+                            color: Color(0xFFE11D48),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              AppDateUtils.formatDateIndo(selectedTanggal),
+                              style: const TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xFF111827),
+                              ),
+                            ),
+                          ),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(6),
+                              border: Border.all(
+                                color: const Color(0xFFD1D5DB),
+                              ),
+                            ),
+                            child: const Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.edit_calendar_rounded,
+                                  size: 13,
+                                  color: Color(0xFF4B5563),
+                                ),
+                                SizedBox(width: 4),
+                                Text(
+                                  'Ubah',
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w600,
+                                    color: Color(0xFF4B5563),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  const Text(
+                    '*Otomatis terisi tanggal hari ini saat Anda mengisi. Tekan Ubah jika ingin melaporkan kegiatan kemarin.',
+                    style: TextStyle(
+                      fontSize: 10.5,
+                      color: Color(0xFF9CA3AF),
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
+                ],
+              );
+            },
           ),
           const SizedBox(height: 14),
 

@@ -63,6 +63,7 @@ jobs:
             Unduh berkas APK versi terbaru di bawah ini dan pasang langsung ke perangkat Android Anda.
             
             ### ✨ Apa yang Baru di Versi ${{ github.ref_name }}:
+            - 📅 **Input Tanggal Poin Kebaikan Cerdas:** Formulir laporan poin kebaikan otomatis terisi tanggal hari ini (hari-H) saat dibuka, dengan opsi dialog pemilih tanggal jika ingin melaporkan kegiatan amalan kemarin.
             - 🔄 **Penyempurnaan Jadwal Kelas Pagi:** Sinkronisasi multi-sumber cerdas (LMS Dashboard + Fallback Jadwal Absensi + Offline Cache) agar jadwal selalu tampil akurat.
             - 🚀 **Performa & Akses Lebih Cepat:** Peningkatan kecepatan startup splash screen dan navigasi dashboard tanpa hambatan.
             - 📄 **Optimalisasi Formulir & Tanda Tangan:** Stabilitas pembuatan Surat Izin tidak masuk kelas dan ekspor PDF.
