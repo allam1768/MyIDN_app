@@ -105,3 +105,8 @@ secrets.json
 lib/src/constants/app_secrets.dart
 lib/src/constants/admin_secret.dart
 
+# Design previews & scratchpads
+screenshots/
+poster_design/
+figma_code_layer/
+

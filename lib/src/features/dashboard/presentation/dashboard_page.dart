@@ -22,6 +22,7 @@ import 'profile_page.dart';
 import 'widgets/class_schedule_card.dart';
 import 'widgets/daily_briefing_card.dart';
 import 'widgets/dashboard_nav_button.dart';
+import 'widgets/jadwal_kuliah_section.dart';
 import 'widgets/task_item_card.dart';
 
 class DashboardPage extends ConsumerWidget {
@@ -160,6 +161,11 @@ class DashboardPage extends ConsumerWidget {
       kelasData: kelasData,
     );
     final pendingTugas = DashboardUtils.filterPendingTasks(listTugas);
+
+    // Jadwal Matkul Semester Reguler & Sesi Mendatang (Dinamis dari Dashboard API)
+    final matkulHariIni = DashboardUtils.extractJadwalMatkulHariIni(dashboardData);
+    final matkulMendatang =
+        DashboardUtils.extractJadwalMatkulMendatang(dashboardData);
 
     // Cek otorisasi khusus Creator (Hanya Allam Permata Putra yang bisa melihat menu Key Studio)
     final isCreator = DashboardUtils.isAllamPermataPutra(
@@ -469,86 +475,54 @@ class DashboardPage extends ConsumerWidget {
                   ),
                 ],
               ),
-              SizedBox(height: 22.h),
+              SizedBox(height: 18.h),
 
-              // Jadwal Hari Ini
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      Text(
-                        'Jadwal Hari Ini',
-                        style: TextStyle(
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.bold,
-                          color: const Color(0xFF111827),
-                        ),
-                      ),
-                      SizedBox(width: 8.w),
-                      Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 8.w,
-                          vertical: 2.h,
-                        ),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFE8F1FF),
-                          borderRadius: BorderRadius.circular(10.r),
-                        ),
-                        child: Text(
-                          '${listKelas.length} Kelas',
+              // Jadwal Kuliah Hari Ini & Sesi Perkuliahan Mendatang (Semester Reguler 100% Dinamis dari LMS)
+              JadwalKuliahSection(
+                listHariIni: matkulHariIni,
+                listMendatang: matkulMendatang,
+              ),
+
+              // Jadwal Sesi Harian (Tahfidz, English, Diniyyah, dll)
+              if (listKelas.isNotEmpty) ...[
+                SizedBox(height: 22.h),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          'Sesi Harian & Pembinaan',
                           style: TextStyle(
-                            fontSize: 10.sp,
+                            fontSize: 16.sp,
                             fontWeight: FontWeight.bold,
-                            color: const Color(0xFF1F81FF),
+                            color: const Color(0xFF111827),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              SizedBox(height: 12.h),
-
-              if (kelasAsync.isLoading && listKelas.isEmpty)
-                Padding(
-                  padding: EdgeInsets.all(20.r),
-                  child: const Center(
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  ),
-                )
-              else if (listKelas.isEmpty)
-                Container(
-                  width: double.infinity,
-                  padding: EdgeInsets.symmetric(
-                    vertical: 20.h,
-                    horizontal: 16.w,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(14.r),
-                    border: Border.all(color: const Color(0xFFE5E7EB)),
-                  ),
-                  child: Column(
-                    children: [
-                      Icon(
-                        Icons.event_busy_rounded,
-                        size: 32.sp,
-                        color: const Color(0xFF9CA3AF),
-                      ),
-                      SizedBox(height: 6.h),
-                      Text(
-                        'Tidak ada jadwal kelas hari ini',
-                        style: TextStyle(
-                          fontSize: 13.sp,
-                          fontWeight: FontWeight.w600,
-                          color: const Color(0xFF6B7280),
+                        SizedBox(width: 8.w),
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 8.w,
+                            vertical: 2.h,
+                          ),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFE8F1FF),
+                            borderRadius: BorderRadius.circular(10.r),
+                          ),
+                          child: Text(
+                            '${listKelas.length} Sesi',
+                            style: TextStyle(
+                              fontSize: 10.sp,
+                              fontWeight: FontWeight.bold,
+                              color: const Color(0xFF1F81FF),
+                            ),
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                )
-              else
+                      ],
+                    ),
+                  ],
+                ),
+                SizedBox(height: 12.h),
                 ListView.separated(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
@@ -584,6 +558,7 @@ class DashboardPage extends ConsumerWidget {
                     );
                   },
                 ),
+              ],
               SizedBox(height: 22.h),
 
               // Daftar Tugas

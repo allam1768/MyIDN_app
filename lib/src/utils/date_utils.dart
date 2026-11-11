@@ -27,6 +27,31 @@ class AppDateUtils {
     'Minggu',
   ];
 
+  static const List<String> namaBulanPendekIndo = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'Mei',
+    'Jun',
+    'Jul',
+    'Agu',
+    'Sep',
+    'Okt',
+    'Nov',
+    'Des',
+  ];
+
+  static const List<String> namaHariPendekIndo = [
+    'Sen',
+    'Sel',
+    'Rab',
+    'Kam',
+    'Jum',
+    'Sab',
+    'Min',
+  ];
+
   /// Format string tanggal "YYYY-MM-DD" atau DateTime menjadi "Hari, DD Bulan YYYY"
   /// Contoh: "2026-09-15" -> "Selasa, 15 September 2026"
   static String formatDateIndo(dynamic dateInput) {
@@ -76,5 +101,37 @@ class AppDateUtils {
     if (dt == null) return '-';
     final monthName = namaBulanIndo[dt.month - 1];
     return '${dt.day} $monthName ${dt.year}';
+  }
+
+  /// Format pill tanggal pendek: "Rab, 11 Nov 2026"
+  static String formatShortPillDate(dynamic dateInput) {
+    if (dateInput == null) return '-';
+
+    DateTime? dt;
+    if (dateInput is DateTime) {
+      dt = dateInput;
+    } else if (dateInput is String) {
+      if (dateInput.trim().isEmpty) return '-';
+      try {
+        final parts = dateInput.split('-');
+        if (parts.length == 3) {
+          final year = int.parse(parts[0]);
+          final month = int.tryParse(parts[1]) ?? 1;
+          final day = int.tryParse(parts[2]) ?? 1;
+          if (month >= 1 && month <= 12) {
+            dt = DateTime(year, month, day);
+          }
+        } else {
+          dt = DateTime.tryParse(dateInput);
+        }
+      } catch (_) {
+        return '-';
+      }
+    }
+
+    if (dt == null) return '-';
+    final dayName = namaHariPendekIndo[dt.weekday - 1];
+    final monthName = namaBulanPendekIndo[dt.month - 1];
+    return '$dayName, ${dt.day} $monthName ${dt.year}';
   }
 }

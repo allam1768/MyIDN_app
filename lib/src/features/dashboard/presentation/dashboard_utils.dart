@@ -701,4 +701,22 @@ class DashboardUtils {
     }
     return null;
   }
+
+  /// Ekstraksi daftar Jadwal Matkul Hari Ini (Semester Reguler) dari Inertia Dashboard
+  static List<dynamic> extractJadwalMatkulHariIni(dynamic dashboardData) {
+    if (dashboardData is Map && dashboardData['props'] is Map) {
+      final list = dashboardData['props']['jadwalMatkulHariIni'];
+      if (list is List) return list;
+    }
+    return [];
+  }
+
+  /// Ekstraksi daftar Sesi Perkuliahan Mendatang dari Inertia Dashboard
+  static List<dynamic> extractJadwalMatkulMendatang(dynamic dashboardData) {
+    if (dashboardData is Map && dashboardData['props'] is Map) {
+      final list = dashboardData['props']['jadwalMatkulMendatang'];
+      if (list is List) return list;
+    }
+    return [];
+  }
 }

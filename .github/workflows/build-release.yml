@@ -63,11 +63,12 @@ jobs:
             Unduh berkas APK versi terbaru di bawah ini dan pasang langsung ke perangkat Android Anda.
             
             ### ✨ Apa yang Baru di Versi ${{ github.ref_name }}:
-            - 📅 **Input Tanggal Poin Kebaikan Cerdas:** Formulir laporan poin kebaikan otomatis terisi tanggal hari ini (hari-H) saat dibuka, dengan opsi dialog pemilih tanggal jika ingin melaporkan kegiatan amalan kemarin.
-            - 🔄 **Penyempurnaan Jadwal Kelas Pagi:** Sinkronisasi multi-sumber cerdas (LMS Dashboard + Fallback Jadwal Absensi + Offline Cache) agar jadwal selalu tampil akurat.
-            - 🚀 **Performa & Akses Lebih Cepat:** Peningkatan kecepatan startup splash screen dan navigasi dashboard tanpa hambatan.
-            - 📄 **Optimalisasi Formulir & Tanda Tangan:** Stabilitas pembuatan Surat Izin tidak masuk kelas dan ekspor PDF.
-            - 🛡️ **Peningkatan Stabilitas Sesi:** Deteksi token expired dan auto-reconnect yang lebih handal.
+            - 🎓 **Integrasi Dinamis Jadwal Kuliah Reguler:** Menampilkan jadwal perkuliahan semester reguler (Agama Islam, Praktikum UI/UX, dll) 100% dinamis dari server LMS dengan tombol aksi cepat Presensi, Materi, dan Tugas.
+            - 🕒 **Carousel Sesi Perkuliahan Mendatang:** Tampilan kartu modern dengan hierarki jam mulai besar (`08:00 WIB`), badge hari pintar (`Hari Ini` / `Besok`), dan chip nomor ruangan lab/kelas yang mencolok.
+            - ⏱️ **Live Clock & Status Presensi:** Indikator jam digital realtime sinkron di header dan badge status `HADIR` otomatis setelah absensi.
+            - 📅 **Input Tanggal Poin Kebaikan Cerdas:** Formulir laporan poin kebaikan otomatis terisi tanggal hari ini saat dibuka.
+            - 🔄 **Penyempurnaan Sinkronisasi Multi-Sumber:** Sinkronisasi multi-sumber cerdas (LMS Dashboard + Sesi Harian Tahfidz + Offline Cache).
+            - 🛡️ **Peningkatan Stabilitas Sesi & Keamanan:** Penanganan terminasi session logout otomatis di backend server.
             
             ### 📥 Download
             * **[MyIDN-${{ github.ref_name }}.apk](https://github.com/allam1768/MyIDN_app/releases/download/${{ github.ref_name }}/MyIDN-${{ github.ref_name }}.apk)**

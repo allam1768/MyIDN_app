@@ -31,6 +31,12 @@ void main() {
       expect(AppDateUtils.formatShortDateIndo(dt), '1 Januari 2026');
       expect(AppDateUtils.formatShortDateIndo('2026-05-20'), '20 Mei 2026');
     });
+
+    test('formatShortPillDate formats date into short day & month pill format', () {
+      expect(AppDateUtils.formatShortPillDate('2026-11-11'), 'Rab, 11 Nov 2026');
+      expect(AppDateUtils.formatShortPillDate('2026-11-12'), 'Kam, 12 Nov 2026');
+      expect(AppDateUtils.formatShortPillDate(null), '-');
+    });
   });
 
   group('KelasUtils Tests', () {
@@ -288,5 +294,26 @@ void main() {
         expect(DashboardUtils.isAllamPermataPutra(), isFalse);
       },
     );
+
+    test('extractJadwalMatkulHariIni and extractJadwalMatkulMendatang extract safely', () {
+      final mock = {
+        'props': {
+          'jadwalMatkulHariIni': [
+            {'id': 510, 'kode_kelas': 'IDN909'}
+          ],
+          'jadwalMatkulMendatang': [
+            {'id': 511, 'kode_kelas': 'IDN415'}
+          ]
+        }
+      };
+
+      expect(DashboardUtils.extractJadwalMatkulHariIni(mock), hasLength(1));
+      expect(DashboardUtils.extractJadwalMatkulHariIni(mock).first['kode_kelas'], 'IDN909');
+      expect(DashboardUtils.extractJadwalMatkulMendatang(mock), hasLength(1));
+      expect(DashboardUtils.extractJadwalMatkulMendatang(mock).first['kode_kelas'], 'IDN415');
+
+      expect(DashboardUtils.extractJadwalMatkulHariIni(null), isEmpty);
+      expect(DashboardUtils.extractJadwalMatkulMendatang({}), isEmpty);
+    });
   });
 }
