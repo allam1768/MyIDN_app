@@ -5,7 +5,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../utils/date_utils.dart';
 import '../../../jadwal_absensi/presentation/absensi_providers.dart';
+import '../../../materi/presentation/detail_materi_page.dart';
 import '../../../materi/presentation/materi_page.dart';
+import '../../../tugas/presentation/detail_tugas_page.dart';
 import '../../../tugas/presentation/tugas_page.dart';
 import '../dashboard_providers.dart';
 
@@ -481,6 +483,10 @@ class _JadwalKuliahSectionState extends ConsumerState<JadwalKuliahSection> {
                 final ruangan = itemMap['ruangan']?.toString() ?? '-';
                 final sks =
                     itemMap['kelas']?['matkul']?['sks']?.toString() ?? '0';
+                final kodeKelas =
+                    itemMap['kelas']?['kode_kelas']?.toString() ??
+                        itemMap['kode_kelas']?.toString() ??
+                        '';
 
                 final absensis = itemMap['absensis'];
                 final String? presensiStatus =
@@ -707,7 +713,13 @@ class _JadwalKuliahSectionState extends ConsumerState<JadwalKuliahSection> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (_) => const MateriPage(),
+                                    builder: (_) => kodeKelas.isNotEmpty
+                                        ? DetailMateriPage(
+                                            kodeKelasHarian: kodeKelas,
+                                            namaKelas: matkul,
+                                            isMatkulDosen: true,
+                                          )
+                                        : const MateriPage(),
                                   ),
                                 );
                               },
@@ -748,7 +760,13 @@ class _JadwalKuliahSectionState extends ConsumerState<JadwalKuliahSection> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (_) => const TugasPage(),
+                                    builder: (_) => kodeKelas.isNotEmpty
+                                        ? DetailTugasPage(
+                                            kodeKelasHarian: kodeKelas,
+                                            namaKelas: matkul,
+                                            isMatkulDosen: true,
+                                          )
+                                        : const TugasPage(),
                                   ),
                                 );
                               },

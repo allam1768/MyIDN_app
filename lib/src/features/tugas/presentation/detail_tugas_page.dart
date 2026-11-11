@@ -11,11 +11,13 @@ import 'tugas_providers.dart';
 class DetailTugasPage extends ConsumerWidget {
   final String kodeKelasHarian;
   final String namaKelas;
+  final bool isMatkulDosen;
 
   const DetailTugasPage({
     super.key,
     required this.kodeKelasHarian,
     required this.namaKelas,
+    this.isMatkulDosen = false,
   });
 
   Future<void> _openFileUrl(BuildContext context, String urlString) async {
@@ -150,13 +152,17 @@ class DetailTugasPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final tugasAsync = ref.watch(detailTugasProvider(kodeKelasHarian));
+    final tugasAsync = isMatkulDosen
+        ? ref.watch(detailTugasMatkulProvider(kodeKelasHarian))
+        : ref.watch(detailTugasProvider(kodeKelasHarian));
 
     return Scaffold(
       appBar: AppBar(centerTitle: true, title: Text('Tugas - $namaKelas')),
       body: AsyncValueWidget<dynamic>(
         value: tugasAsync,
-        onRetry: () => ref.invalidate(detailTugasProvider(kodeKelasHarian)),
+        onRetry: () => isMatkulDosen
+            ? ref.invalidate(detailTugasMatkulProvider(kodeKelasHarian))
+            : ref.invalidate(detailTugasProvider(kodeKelasHarian)),
         data: (detailData) {
           List<dynamic> tugasList = [];
           String semester = '-';
@@ -194,7 +200,11 @@ class DetailTugasPage extends ConsumerWidget {
 
           return RefreshIndicator(
             onRefresh: () async {
-              ref.invalidate(detailTugasProvider(kodeKelasHarian));
+              if (isMatkulDosen) {
+                ref.invalidate(detailTugasMatkulProvider(kodeKelasHarian));
+              } else {
+                ref.invalidate(detailTugasProvider(kodeKelasHarian));
+              }
             },
             child: SingleChildScrollView(
               physics: const AlwaysScrollableScrollPhysics(),

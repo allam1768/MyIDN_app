@@ -10,6 +10,22 @@ final detailTugasProvider = FutureProvider.autoDispose.family<dynamic, String>((
   return api.getDetailTugasHarian(kodeKelas);
 });
 
+/// Provider detail tugas per kode kelas matkul dosen (Semester Reguler)
+final detailTugasMatkulProvider =
+    FutureProvider.autoDispose.family<dynamic, String>((
+  ref,
+  kodeKelas,
+) {
+  final api = ref.watch(lmsApiServiceProvider);
+  return api.getDetailTugasMatkul(kodeKelas);
+});
+
+/// Provider list tugas matkul dosen
+final tugasMatkulProvider = FutureProvider.autoDispose<dynamic>((ref) {
+  final api = ref.watch(lmsApiServiceProvider);
+  return api.getTugasMatkul();
+});
+
 class TugasSubmitState {
   final bool isSubmitting;
   final String? errorMessage;

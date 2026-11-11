@@ -420,6 +420,43 @@ class LmsApiService {
   Future<dynamic> getMateriHarian() =>
       _safeInertiaGet(LmsEndpoints.materiHarian, 'MATERI HARIAN');
 
+  /// Mengambil data Kelas Matkul Dosen (Semester Reguler)
+  Future<dynamic> getKelasMatkul() =>
+      _safeInertiaGet(LmsEndpoints.kelasMatkul, 'KELAS MATKUL DOSEN');
+
+  /// Mengambil data Materi Matkul Dosen
+  Future<dynamic> getMateriMatkul() =>
+      _safeInertiaGet(LmsEndpoints.materiMatkul, 'MATERI MATKUL DOSEN');
+
+  /// Mengambil detail materi matkul dosen per kode kelas (misal: IDN207)
+  Future<dynamic> getDetailMateriMatkul(String kodeKelas) =>
+      _safeInertiaGet(
+        LmsEndpoints.detailMateriMatkul(kodeKelas),
+        'DETAIL MATERI MATKUL ($kodeKelas)',
+      );
+
+  /// Mengambil data Tugas Matkul Dosen
+  Future<dynamic> getTugasMatkul() =>
+      _safeInertiaGet(LmsEndpoints.tugasMatkul, 'TUGAS MATKUL DOSEN');
+
+  /// Mengambil detail tugas matkul dosen per kode kelas (misal: IDN207)
+  Future<dynamic> getDetailTugasMatkul(String kodeKelas) =>
+      _safeInertiaGet(
+        LmsEndpoints.detailTugasMatkul(kodeKelas),
+        'DETAIL TUGAS MATKUL ($kodeKelas)',
+      );
+
+  /// Mengambil data Absensi Matkul Dosen
+  Future<dynamic> getAbsensiMatkul() =>
+      _safeInertiaGet(LmsEndpoints.absensiMatkul, 'ABSENSI MATKUL DOSEN');
+
+  /// Mengambil detail absensi / presence matkul dosen per kode kelas
+  Future<dynamic> getDetailAbsensiMatkul(String kodeKelas) =>
+      _safeInertiaGet(
+        LmsEndpoints.detailAbsensiMatkul(kodeKelas),
+        'DETAIL ABSENSI MATKUL ($kodeKelas)',
+      );
+
   /// Mengambil detail materi dari kelas tertentu (misal: KH159)
   Future<dynamic> getDetailMateriHarian(String kodeKelasHarian) =>
       _safeInertiaGet(

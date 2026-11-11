@@ -11,11 +11,13 @@ import 'materi_providers.dart';
 class DetailMateriPage extends ConsumerWidget {
   final String kodeKelasHarian;
   final String namaKelas;
+  final bool isMatkulDosen;
 
   const DetailMateriPage({
     super.key,
     required this.kodeKelasHarian,
     required this.namaKelas,
+    this.isMatkulDosen = false,
   });
 
   Future<void> _openFileUrl(BuildContext context, String urlString) async {
@@ -270,13 +272,17 @@ class DetailMateriPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // Declarative & auto-cached via Riverpod!
-    final materiAsync = ref.watch(detailMateriProvider(kodeKelasHarian));
+    final materiAsync = isMatkulDosen
+        ? ref.watch(detailMateriMatkulProvider(kodeKelasHarian))
+        : ref.watch(detailMateriProvider(kodeKelasHarian));
 
     return Scaffold(
       appBar: AppBar(centerTitle: true, title: Text(namaKelas)),
       body: AsyncValueWidget<dynamic>(
         value: materiAsync,
-        onRetry: () => ref.invalidate(detailMateriProvider(kodeKelasHarian)),
+        onRetry: () => isMatkulDosen
+            ? ref.invalidate(detailMateriMatkulProvider(kodeKelasHarian))
+            : ref.invalidate(detailMateriProvider(kodeKelasHarian)),
         data: (detailData) {
           List<dynamic> materiList = [];
           String semester = '-';
@@ -304,8 +310,9 @@ class DetailMateriPage extends ConsumerWidget {
           }
 
           return RefreshIndicator(
-            onRefresh: () async =>
-                ref.invalidate(detailMateriProvider(kodeKelasHarian)),
+            onRefresh: () async => isMatkulDosen
+                ? ref.invalidate(detailMateriMatkulProvider(kodeKelasHarian))
+                : ref.invalidate(detailMateriProvider(kodeKelasHarian)),
             child: SingleChildScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
               padding: const EdgeInsets.all(16.0),

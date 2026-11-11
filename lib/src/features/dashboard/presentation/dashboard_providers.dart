@@ -249,6 +249,12 @@ final dashboardMahasiswaProvider = FutureProvider.autoDispose<dynamic>((ref) {
   return api.getDashboardMahasiswa();
 });
 
+/// Provider data kelas matkul dosen (Semester Reguler: RPL-xxx, dsb)
+final kelasMatkulProvider = FutureProvider.autoDispose<dynamic>((ref) {
+  final api = ref.watch(lmsApiServiceProvider);
+  return api.getKelasMatkul();
+});
+
 /// Provider informasi sesi debug (token & header)
 final debugSessionProvider = FutureProvider.autoDispose<Map<String, String>>((
   ref,

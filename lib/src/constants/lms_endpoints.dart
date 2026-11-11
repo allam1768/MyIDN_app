@@ -16,6 +16,21 @@ class LmsEndpoints {
   static const String absensiHarian = '/my/mhs/harian/absensi_harian';
   static const String materiHarian = '/my/mhs/harian/materi_harian';
 
+  // Mahasiswa - Kelas Dosen (Matkul Reguler)
+  static const String kelasMatkul = '/my/mhs/kelas';
+  static const String materiMatkul = '/my/mhs/materi';
+  static String detailMateriMatkul(String kodeKelas) =>
+      '/my/mhs/materi/class/$kodeKelas/materi';
+  static const String tugasMatkul = '/my/mhs/tugas';
+  static String detailTugasMatkul(String kodeKelas) =>
+      '/my/mhs/tugas/class/$kodeKelas/tugas';
+  static const String submitTugasMatkul = '/my/mhs/tugas/sendTugas';
+  static const String absensiMatkul = '/my/mhs/absensi';
+  static String detailAbsensiMatkul(String kodeKelas) =>
+      '/my/mhs/absensi/class/$kodeKelas/presence';
+  static const String submitPresensiMatkul = '/my/mhs/absensi/doPresence';
+  static const String registrasiKelasMatkul = '/my/mhs/reg';
+
   // Materi Detail
   static String detailMateri(String kodeKelas) =>
       '/my/mhs/harian/materi_harian/class/$kodeKelas/materi';
