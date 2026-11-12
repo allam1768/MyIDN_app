@@ -24,5 +24,9 @@ void main() {
       LmsEndpoints.detailAbsensiMatkul('IDN207'),
       '/my/mhs/absensi/class/IDN207/presence',
     );
+    expect(
+      LmsEndpoints.submitPresensiMatkul,
+      '/my/mhs/absensi/doPresence',
+    );
   });
 }

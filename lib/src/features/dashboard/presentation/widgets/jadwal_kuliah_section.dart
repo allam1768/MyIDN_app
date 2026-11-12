@@ -97,6 +97,9 @@ class _JadwalKuliahSectionState extends ConsumerState<JadwalKuliahSection> {
     final matkul =
         item['kelas']?['matkul']?['nama_matkul']?.toString() ?? 'Mata Kuliah';
     final namaKelas = item['kelas']?['nama_kelas']?.toString() ?? '-';
+    final kodeKelas = item['kelas']?['kode_kelas']?.toString() ??
+        item['kode_kelas']?.toString() ??
+        '';
     final ruangan = item['ruangan']?.toString() ?? '-';
 
     final textController = TextEditingController(text: defaultKode);
@@ -152,7 +155,7 @@ class _JadwalKuliahSectionState extends ConsumerState<JadwalKuliahSection> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Presensi Kuliah',
+                          'Presensi Kuliah Dosen',
                           style: TextStyle(
                             fontSize: 16.sp,
                             fontWeight: FontWeight.bold,
@@ -266,24 +269,30 @@ class _JadwalKuliahSectionState extends ConsumerState<JadwalKuliahSection> {
                     if (kode.isEmpty) return;
                     Navigator.pop(ctx);
 
-                    final success = await ref
+                    final result = await ref
                         .read(presensiSubmitControllerProvider.notifier)
-                        .submit(jadwalId: jadwalId, kodeUnik: kode);
+                        .submitMatkul(
+                          kodeKelas: kodeKelas,
+                          jadwalId: jadwalId,
+                          kodePresensi: kode,
+                          status: 'hadir',
+                        );
 
                     if (!context.mounted) return;
-                    if (success) {
+                    if (result.success) {
                       ref.invalidate(dashboardMahasiswaProvider);
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                          content: Text('Presensi berhasil dikirim!'),
+                          content: Text('Presensi hadir kuliah berhasil dikirim!'),
                           backgroundColor: Color(0xFF16A34A),
                         ),
                       );
                     } else {
+                      final msg = result.message ?? 'Gagal mengirim presensi. Periksa kembali kode atau jam kuliah.';
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Gagal mengirim presensi. Periksa kembali kode.'),
-                          backgroundColor: Color(0xFFDC2626),
+                        SnackBar(
+                          content: Text(msg),
+                          backgroundColor: const Color(0xFFDC2626),
                         ),
                       );
                     }

@@ -585,7 +585,7 @@ class LmsApiService {
     );
   }
 
-  /// Melakukan presensi absensi dengan kode presensi (kode_unik) dan jadwal_id
+  /// Melakukan presensi absensi dengan kode presensi (kode_unik) dan jadwal_id (Kelas Harian)
   Future<Map<String, dynamic>> submitPresensi({
     required String kodeUnik,
     required int jadwalId,
@@ -609,6 +609,75 @@ class LmsApiService {
           response.statusCode == 302 ||
           response.statusCode == 303,
     };
+  }
+
+  /// Melakukan presensi absensi matkul kuliah dosen (Semester Reguler)
+  Future<Map<String, dynamic>> submitPresensiMatkul({
+    required String kodeKelas,
+    required int jadwalId,
+    required String kodePresensi,
+    String status = 'hadir',
+  }) async {
+    await init();
+    final headers = await _getAuthorizedInertiaHeaders();
+
+    final postData = {
+      'kode_kelas': kodeKelas,
+      'jadwal_id': jadwalId,
+      'kode_presensi': kodePresensi.trim().toUpperCase(),
+      'status': status,
+    };
+
+    try {
+      final response = await _dio.post(
+        LmsEndpoints.submitPresensiMatkul,
+        data: postData,
+        options: Options(
+          headers: headers,
+          followRedirects: false,
+          validateStatus: (status) => status != null && status < 500,
+        ),
+      );
+
+      // Cek apakah ada redirect ke dashboard dengan props flash/errors
+      String? errorMessage;
+      if (response.statusCode == 302 || response.statusCode == 303) {
+        final redirectUrl = response.headers.value('location');
+        if (redirectUrl != null && redirectUrl.isNotEmpty) {
+          try {
+            final followRes = await _dio.get(
+              redirectUrl,
+              options: Options(headers: headers),
+            );
+            final data = followRes.data;
+            if (data is Map && data['props'] is Map) {
+              final errors = data['props']['errors'];
+              if (errors is Map && errors.isNotEmpty) {
+                errorMessage = errors.values.first?.toString();
+              }
+            }
+          } catch (_) {}
+        }
+      }
+
+      final isSuccess = errorMessage == null &&
+          (response.statusCode == 200 ||
+              response.statusCode == 302 ||
+              response.statusCode == 303);
+
+      return {
+        'statusCode': response.statusCode,
+        'data': response.data,
+        'isSuccess': isSuccess,
+        'errorMessage': errorMessage,
+      };
+    } catch (e) {
+      return {
+        'statusCode': 500,
+        'isSuccess': false,
+        'errorMessage': e.toString(),
+      };
+    }
   }
 
   /// Ambil info status sesi (headers & token aman)
